@@ -2,24 +2,38 @@
   "name": "@laserware/hoverboard",
   "version": "1.0.0",
   "description": "Better context menus for Electron.",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "repository": {
     "url": "git+https://github.com/laserware/hoverboard.git",
     "type": "git"
   },
   "author": "Mike Rourke <mike.w.rourke@gmail.com>",
   "license": "MIT",
+  "exports": {
+    "./main": {
+      "import": "./dist/main.mjs",
+      "require": "./dist/main.cjs",
+      "types": "./dist/main.d.ts"
+    },
+    "./renderer": {
+      "import": "./dist/renderer.mjs",
+      "require": "./dist/renderer.cjs",
+      "types": "./dist/renderer.d.ts"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "main.d.ts",
+    "renderer.d.ts"
   ],
-  "keywords": [],
+  "keywords": [
+    "electron",
+    "context-menus"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "tsup && cd dist && npx prettier --write .",
+    "build": "tsup --no-splitting && cd dist && npx prettier --write .",
     "prepublishOnly": "npm run build",
     "preversion": "npm run eslint && npm run typecheck",
     "version": "npm run prettier && git add -A src",
@@ -30,10 +44,16 @@
     "eslint": "eslint --cache src",
     "vitest": "vitest"
   },
+  "dependencies": {
+    "@laserware/arcade": "^3.5.0",
+    "@laserware/dominator": "^2.9.0"
+  },
   "devDependencies": {
     "@laserware/eslint-config": "^3.2.2",
+    "@testing-library/jest-dom": "^6.4.8",
     "electron": "^31.3.1",
     "eslint": "^8.57.0",
+    "jsdom": "^24.1.1",
     "prettier": "^3.3.3",
     "tslib": "^2.6.3",
     "tsup": "^8.2.4",

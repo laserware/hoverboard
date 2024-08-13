@@ -1,10 +1,10 @@
+import { resolve } from "node:path";
+
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     coverage: {
-      provider: "istanbul",
-      reporter: ["lcov"],
       exclude: [
         "**/__fakes__/**",
         "**/__mocks__/**",
@@ -13,6 +13,11 @@ export default defineConfig({
         "**/*.json",
         "**/*.js",
       ],
+      provider: "istanbul",
+      reporter: ["lcov"],
     },
+    environment: "jsdom",
+    globals: true,
+    setupFiles: resolve(import.meta.dirname, "vitest.setup.mts"),
   },
 });
