@@ -1,0 +1,70 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the ContextMenu class > builds a context menu with a template that matches its snapshot 1`] = `
+[
+  {
+    "id": "random-id-2",
+    "label": "Normal 1",
+    "type": "normal",
+  },
+  {
+    "id": "random-id-3",
+    "label": "Normal 2",
+    "type": "normal",
+  },
+  {
+    "id": "random-id-4",
+    "label": "Normal 3",
+    "type": "normal",
+    "visible": false,
+  },
+  {
+    "enabled": true,
+    "role": "copy",
+  },
+  {
+    "enabled": false,
+    "role": "paste",
+  },
+  {
+    "type": "separator",
+  },
+  {
+    "checked": true,
+    "id": "random-id-5",
+    "label": "Check 1",
+    "type": "checkbox",
+  },
+  {
+    "checked": false,
+    "id": "random-id-6",
+    "label": "Check 2",
+    "type": "checkbox",
+  },
+  {
+    "id": "random-id-10",
+    "label": "Submenu",
+    "submenu": [
+      {
+        "checked": true,
+        "id": "random-id-7",
+        "label": "Radio 1",
+        "type": "radio",
+      },
+      {
+        "checked": false,
+        "id": "random-id-8",
+        "label": "Radio 2",
+        "type": "radio",
+      },
+      {
+        "checked": false,
+        "id": "random-id-9",
+        "label": "Radio 3",
+        "type": "radio",
+      },
+    ],
+    "type": "submenu",
+  },
+]
+`;
