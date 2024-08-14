@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { uuid } from "@laserware/arcade";
 import { TypedEventTarget } from "@laserware/dominator";
 import type {
@@ -7,34 +9,40 @@ import type {
 } from "electron";
 
 import {
-  IpcChannel,
-  type ContextMenuItemClickedData,
-  type ContextMenuShownData,
-  type OnContextMenuItemClick,
-  type ContextMenuItem,
-} from "../types.ts";
-
-import {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
-} from "./CheckboxMenuItem.ts";
-import { getDefaultIpcApi, type IpcApi } from "./ipcApi.ts";
+} from "../common/CheckboxMenuItem.ts";
 import {
   NormalMenuItem,
   type NormalMenuItemOptions,
-} from "./NormalMenuItem.ts";
-import { RadioMenuItem, type RadioMenuItemOptions } from "./RadioMenuItem.ts";
-import { RoleMenuItem, type RoleMenuItemOptions } from "./RoleMenuItem.ts";
+} from "../common/NormalMenuItem.ts";
+import {
+  RadioMenuItem,
+  type RadioMenuItemOptions,
+} from "../common/RadioMenuItem.ts";
+import {
+  RoleMenuItem,
+  type RoleMenuItemOptions,
+} from "../common/RoleMenuItem.ts";
 import {
   SeparatorMenuItem,
   type SeparatorMenuItemOptions,
-} from "./SeparatorMenuItem.ts";
+} from "../common/SeparatorMenuItem.ts";
 import {
-  ContextMenuBuilder,
+  MenuBuilder,
   SubmenuMenuItem,
   type BuilderFunction,
   type SubmenuMenuItemOptions,
-} from "./SubmenuMenuItem.ts";
+} from "../common/SubmenuMenuItem.ts";
+import {
+  IpcChannel,
+  type ContextMenuItemClickedData,
+  type ContextMenuShownData,
+  type MenuItemOf,
+  type OnContextMenuItemClick,
+} from "../common/types.ts";
+
+import { getDefaultIpcApi, type IpcApi } from "./ipcApi.ts";
 
 type ContextMenuEventMap = {
   /**
@@ -42,7 +50,7 @@ type ContextMenuEventMap = {
    * (or in addition to) `click` events assigned to individual context menu
    * items.
    */
-  click: CustomEvent<{ menuItem: ContextMenuItem; event: KeyboardEvent }>;
+  click: CustomEvent<{ menuItem: MenuItemOf<"context">; event: KeyboardEvent }>;
 };
 
 /**
@@ -51,7 +59,7 @@ type ContextMenuEventMap = {
  * @public
  */
 export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
-  readonly #builder: ContextMenuBuilder;
+  readonly #builder: MenuBuilder<"context">;
   /**
    * Store references to click events that are fired when the context menu item
    * is clicked. We store these here because they cannot be serialized and
@@ -85,7 +93,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
   public static create(
     name: string,
     ipcApi: IpcApi,
-    builder: BuilderFunction,
+    builder: BuilderFunction<"context">,
   ): ContextMenu;
   /**
    * Returns a new context menu with the specified name and builder function.
@@ -93,11 +101,14 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
    * @param name Name of the context menu.
    * @param builder Builder function used to add items to the context menu.
    */
-  public static create(name: string, builder: BuilderFunction): ContextMenu;
   public static create(
     name: string,
-    builderOrIpcApi: BuilderFunction | IpcApi,
-    builder?: BuilderFunction,
+    builder: BuilderFunction<"context">,
+  ): ContextMenu;
+  public static create(
+    name: string,
+    builderOrIpcApi: BuilderFunction<"context"> | IpcApi,
+    builder?: BuilderFunction<"context">,
   ): ContextMenu {
     return new ContextMenu(name, builderOrIpcApi, builder);
   }
@@ -117,8 +128,8 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
    */
   constructor(
     name: string,
-    builderOrIpcApi: BuilderFunction | IpcApi,
-    builder?: BuilderFunction,
+    builderOrIpcApi: BuilderFunction<"context"> | IpcApi,
+    builder?: BuilderFunction<"context">,
   ) {
     super();
 
@@ -127,7 +138,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
     this.#id = uuid();
 
     if (typeof builderOrIpcApi === "function") {
-      this.#builder = builderOrIpcApi(new ContextMenuBuilder());
+      this.#builder = builderOrIpcApi(new MenuBuilder());
     } else {
       this.#ipcApi = builderOrIpcApi;
 
@@ -135,7 +146,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
         // prettier-ignore
         throw new Error("A builder function is required to create a context menu");
       } else {
-        this.#builder = builder(new ContextMenuBuilder());
+        this.#builder = builder(new MenuBuilder());
       }
     }
 
@@ -146,42 +157,48 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
   }
 
   /** Returns a new checkbox menu item with the specified options. */
-  public static checkbox(options: CheckboxMenuItemOptions): CheckboxMenuItem {
+  public static checkbox(
+    options: CheckboxMenuItemOptions<"context">,
+  ): CheckboxMenuItem<"context"> {
     return new CheckboxMenuItem(options);
   }
 
   /** Returns a new normal menu item with the specified options. */
-  public static normal(options: NormalMenuItemOptions): NormalMenuItem {
+  public static normal(
+    options: NormalMenuItemOptions<"context">,
+  ): NormalMenuItem<"context"> {
     return new NormalMenuItem(options);
   }
 
   /** Returns a new radio menu item with the specified options. */
-  public static radio(options: RadioMenuItemOptions): RadioMenuItem {
+  public static radio(
+    options: RadioMenuItemOptions<"context">,
+  ): RadioMenuItem<"context"> {
     return new RadioMenuItem(options);
   }
 
   /** Returns a new role menu item with the specified options. */
-  public static role(options: RoleMenuItemOptions): RoleMenuItem {
+  public static role(options: RoleMenuItemOptions): RoleMenuItem<"context"> {
     return new RoleMenuItem(options);
   }
 
   /** Returns a new separator menu item with the specified options. */
   public static separator(
     options?: SeparatorMenuItemOptions,
-  ): SeparatorMenuItem {
+  ): SeparatorMenuItem<"context"> {
     return new SeparatorMenuItem(options);
   }
 
   /** Returns a new submenu menu item with the specified options. */
   public static submenu(
-    options: SubmenuMenuItemOptions,
-    build: BuilderFunction,
-  ): SubmenuMenuItem {
+    options: SubmenuMenuItemOptions<"context">,
+    build: BuilderFunction<"context">,
+  ): SubmenuMenuItem<"context"> {
     return new SubmenuMenuItem(options, build);
   }
 
   /** Menu items in the context menu. */
-  public get items(): Set<ContextMenuItem> {
+  public get items(): Set<MenuItemOf<"context">> {
     return this.#builder.items;
   }
 
@@ -201,7 +218,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
   }
 
   /** Adds the specified menu item to the context menu. */
-  public add(menuItem: ContextMenuItem): this {
+  public add(menuItem: MenuItemOf<"context">): this {
     this.items.add(menuItem);
 
     return this;
@@ -218,7 +235,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
 
     // Recurse through all the menu items, save click handlers by ID, and ensure
     // there are not menu items with duplicate IDs in the menu:
-    const walkMenuItems = (menuItems: Set<ContextMenuItem>): void => {
+    const walkMenuItems = (menuItems: Set<MenuItemOf<"context">>): void => {
       for (const menuItem of menuItems.values()) {
         // Some menu items don't require an ID, such as a separator, so we set that
         // to an empty string in the menu item class. If we don't skip those, it's

@@ -2,26 +2,24 @@ import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
 import type {
-  ContextMenuItem,
-  OnContextMenuItemClick,
-  ContextMenuItemPlacementOptions,
-} from "../types.ts";
+  MenuItemOf,
+  MenuItemPlacementOptions,
+  MenuType,
+  OnMenuItemClick,
+} from "./types.ts";
 
 /**
- * Options for creating a checkbox context menu item.
+ * Options for creating a normal menu item.
  *
  * @public
  */
-// prettier-ignore
-export interface CheckboxMenuItemOptions extends ContextMenuItemPlacementOptions {
+export interface NormalMenuItemOptions<T extends MenuType>
+  extends MenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
   /** Label to display in the menu item. */
   label: string;
-
-  /** Indicates whether the checkbox is checked. */
-  checked: boolean;
 
   /** Indicates if the menu item is enabled or disabled. */
   enabled?: boolean;
@@ -62,21 +60,21 @@ export interface CheckboxMenuItemOptions extends ContextMenuItemPlacementOptions
   registerAccelerator?: boolean;
 
   /** Optional click handler for the menu item. */
-  click?: OnContextMenuItemClick;
+  click?: OnMenuItemClick<T>;
 }
 
 /**
- * Represents a checkbox context menu item. A checkbox menu item has the same
- * features as a {@link NormalMenuItem} with the addition of a checkmark in
- * the control.
+ * Represents a normal menu item. A "normal" item is essentially a button that
+ * can be enabled/disabled or hidden and performs some operation in response
+ * to a click event.
  *
  * @public
  */
-export class CheckboxMenuItem implements ContextMenuItem {
+export class NormalMenuItem<T extends MenuType> implements MenuItemOf<T> {
   readonly #id: string;
-  readonly #options: CheckboxMenuItemOptions;
+  readonly #options: NormalMenuItemOptions<T>;
 
-  constructor(options: CheckboxMenuItemOptions) {
+  constructor(options: NormalMenuItemOptions<T>) {
     this.#id = options.id ?? uuid();
     this.#options = options;
   }
@@ -85,12 +83,12 @@ export class CheckboxMenuItem implements ContextMenuItem {
     return this.#id;
   }
 
-  public get click(): OnContextMenuItemClick | undefined {
+  public get click(): OnMenuItemClick<T> | undefined {
     return this.#options.click;
   }
 
   public get template(): MenuItemConstructorOptions {
     const { click, ...rest } = this.#options;
-    return { ...rest, id: this.#id, type: "checkbox" };
+    return { ...rest, id: this.#id, type: "normal" };
   }
 }

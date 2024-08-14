@@ -1,18 +1,19 @@
 import type { MenuItemConstructorOptions } from "electron";
 
 import type {
-  ContextMenuItem,
-  OnContextMenuItemClick,
-  ContextMenuItemPlacementOptions,
-} from "../types.ts";
+  MenuItemOf,
+  MenuItemPlacementOptions,
+  MenuType,
+  OnMenuItemClick,
+} from "./types.ts";
 
 /**
- * Options for creating a role context menu item. Note that a label or click
+ * Options for creating a role menu item. Note that a label or click
  * event cannot be specified, as the role represents a system operation.
  *
  * @public
  */
-export interface RoleMenuItemOptions extends ContextMenuItemPlacementOptions {
+export interface RoleMenuItemOptions extends MenuItemPlacementOptions {
   /** Role for the menu item. */
   role: Required<MenuItemConstructorOptions["role"]>;
 
@@ -49,7 +50,7 @@ export interface RoleMenuItemOptions extends ContextMenuItemPlacementOptions {
  *
  * @public
  */
-export class RoleMenuItem implements ContextMenuItem {
+export class RoleMenuItem<T extends MenuType> implements MenuItemOf<T> {
   readonly #options: RoleMenuItemOptions;
 
   constructor(options: RoleMenuItemOptions) {
@@ -63,7 +64,7 @@ export class RoleMenuItem implements ContextMenuItem {
 
   // Role menu items cannot have a custom click event because it performs a
   // system operation.
-  public get click(): OnContextMenuItemClick | undefined {
+  public get click(): OnMenuItemClick<T> | undefined {
     return undefined;
   }
 

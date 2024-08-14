@@ -1,14 +1,49 @@
 import type {
+  BrowserWindow,
   KeyboardEvent,
+  MenuItem,
   MenuItemConstructorOptions,
   Point,
 } from "electron";
 
 /**
- * Options for placing the context menu item in a specific location relative
- * to other menu items or groups.
+ * Menu type of the manu. Context menus are created/shown in the renderer process
+ * where the click handler code resides. The main menu is created in the main
+ * process and represents the menu in the title bar of the application.
  */
-export interface ContextMenuItemPlacementOptions {
+export type MenuType = "context" | "main";
+
+/**
+ * This is the click event fired in the _main_ process when a main menu
+ * item is clicked.
+ */
+export type OnMainMenuItemClick = (
+  menuItem: MenuItem,
+  browserWindow: BrowserWindow | undefined,
+  event: KeyboardEvent,
+) => void;
+
+/**
+ * This is the click event fired in the _renderer_ process when a context menu
+ * item is clicked. It has a different signature than the `click` event from the
+ * `MenuItemConstructorOptions`.
+ */
+export type OnContextMenuItemClick = (
+  menuItem: MenuItemConstructorOptions,
+  event: KeyboardEvent,
+) => void;
+
+export type OnMenuItemClick<T extends MenuType> = T extends "context"
+  ? OnContextMenuItemClick
+  : T extends "main"
+    ? OnMainMenuItemClick
+    : never;
+
+/**
+ * Options for placing the menu item in a specific location relative to other
+ * menu items or groups.
+ */
+export interface MenuItemPlacementOptions {
   /**
    * Inserts the item before the item with the specified ID. If the referenced
    * item doesn't exist the item will be inserted at the end of the menu.
@@ -24,13 +59,13 @@ export interface ContextMenuItemPlacementOptions {
   after?: string[];
 
   /**
-   * Provides a means for a single context menu to declare the placement of their
+   * Provides a means for a single menu to declare the placement of their
    * containing group before the containing group of the item with the specified ID.
    */
   beforeGroupContaining?: string[];
 
   /**
-   * Provides a means for a single context menu to declare the placement of their
+   * Provides a means for a single menu to declare the placement of their
    * containing group after the containing group of the item with the specified ID.
    */
   afterGroupContaining?: string[];
@@ -83,24 +118,14 @@ export interface ContextMenuItemClickedData {
 }
 
 /**
- * This is the click event fired in the _renderer_ process when a context menu
- * item is clicked. It has a different signature than the `click` event from the
- * `MenuItemConstructorOptions`.
- */
-export type OnContextMenuItemClick = (
-  menuItem: MenuItemConstructorOptions,
-  event: KeyboardEvent,
-) => void;
-
-/**
- * Interface for defining a context menu. Some context menu items don't have an
- * associated click event or an ID, but we want all context menu items to adhere
+ * Interface for defining a context or main menu. Some menu items don't have an
+ * associated click event or an ID, but we want all menu items to adhere
  * to the same interface so we can track click handlers and access the template
- * to send to the main process to build the menu.
+ * to send to the main process (for context menus) to build the menu.
  */
-export interface ContextMenuItem {
+export interface MenuItemOf<T extends MenuType> {
   get id(): string;
-  get click(): OnContextMenuItemClick | undefined;
+  get click(): OnMenuItemClick<T> | undefined;
   get template(): MenuItemConstructorOptions;
 }
 

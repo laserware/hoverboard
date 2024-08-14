@@ -1,12 +1,6 @@
 import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
-import type {
-  ContextMenuItem,
-  OnContextMenuItemClick,
-  ContextMenuItemPlacementOptions,
-} from "../types.ts";
-
 import {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
@@ -21,24 +15,30 @@ import {
   SeparatorMenuItem,
   type SeparatorMenuItemOptions,
 } from "./SeparatorMenuItem.ts";
+import type {
+  MenuItemOf,
+  MenuItemPlacementOptions,
+  MenuType,
+  OnMenuItemClick,
+} from "./types.ts";
 
 /**
- * Function called with the specified context menu builder to add menu items to
- * the associated context menu.
+ * Function called with the specified menu builder to add menu items to the
+ * associated menu.
  *
  * @public
  */
-export type BuilderFunction = (
-  builder: ContextMenuBuilder,
-) => ContextMenuBuilder;
+export type BuilderFunction<T extends MenuType> = (
+  builder: MenuBuilder<T>,
+) => MenuBuilder<T>;
 
 /**
- * Options for creating a submenu context menu item.
+ * Options for creating a submenu menu item.
  *
  * @public
  */
 // prettier-ignore
-export interface SubmenuMenuItemOptions extends ContextMenuItemPlacementOptions {
+export interface SubmenuMenuItemOptions<T extends MenuType> extends MenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
@@ -61,11 +61,11 @@ export interface SubmenuMenuItemOptions extends ContextMenuItemPlacementOptions 
   icon?: string;
 
   /** Optional click handler for the menu item. */
-  click?: OnContextMenuItemClick;
+  click?: OnMenuItemClick<T>;
 }
 
 /**
- * Allows you to add menu items of different types to a context menu/submenu
+ * Allows you to add menu items of different types to a menu/submenu
  * using method chaining. Each menu item creator returns the builder. You
  * can ignore the return value if you need to add items dynamically.
  *
@@ -73,9 +73,9 @@ export interface SubmenuMenuItemOptions extends ContextMenuItemPlacementOptions 
  * need the type for a function signature.
  *
  * @example
- * import { ContextMenu, type ContextMenuBuilder } from "@freeflyer/context-menus/browser";
+ * import { ContextMenu, type MenuBuilder } from "@laserware/hoverboard/renderer";
  *
- * function addCustomItems(builder: ContextMenuBuilder): void {
+ * function addCustomItems(builder: MenuBuilder<"context">): void {
  *   builder
  *    .normal({ label: "Custom 1" })
  *    .normal({ label: "Custom 2" })
@@ -92,56 +92,56 @@ export interface SubmenuMenuItemOptions extends ContextMenuItemPlacementOptions 
  *
  * @internal
  */
-export class ContextMenuBuilder {
-  readonly #items: Set<ContextMenuItem> = new Set();
+export class MenuBuilder<T extends MenuType> {
+  readonly #items: Set<MenuItemOf<T>> = new Set();
 
-  /** Menu items in the context menu or submenu this builder is associated with. */
-  public get items(): Set<ContextMenuItem> {
+  /** Menu items in the menu or submenu this builder is associated with. */
+  public get items(): Set<MenuItemOf<T>> {
     return this.#items;
   }
 
-  /** Adds the specified menu item to the context menu. */
-  public add(menuItem: ContextMenuItem): this {
+  /** Adds the specified menu item to the menu. */
+  public add(menuItem: MenuItemOf<T>): this {
     this.#items.add(menuItem);
     return this;
   }
 
-  /** Adds a checkbox menu item to the context menu with the specified options. */
-  public checkbox(options: CheckboxMenuItemOptions): this {
+  /** Adds a checkbox menu item to the menu with the specified options. */
+  public checkbox(options: CheckboxMenuItemOptions<T>): this {
     this.#items.add(new CheckboxMenuItem(options));
     return this;
   }
 
-  /** Adds a normal menu item to the context menu with the specified options. */
-  public normal(options: NormalMenuItemOptions): this {
+  /** Adds a normal menu item to the menu with the specified options. */
+  public normal(options: NormalMenuItemOptions<T>): this {
     this.#items.add(new NormalMenuItem(options));
     return this;
   }
 
-  /** Adds a radio menu item to the context menu with the specified options. */
-  public radio(options: RadioMenuItemOptions): this {
+  /** Adds a radio menu item to the menu with the specified options. */
+  public radio(options: RadioMenuItemOptions<T>): this {
     this.#items.add(new RadioMenuItem(options));
     return this;
   }
 
-  /** Adds a role menu item to the context menu with the specified options. */
+  /** Adds a role menu item to the menu with the specified options. */
   public role(options: RoleMenuItemOptions): this {
     this.#items.add(new RoleMenuItem(options));
     return this;
   }
 
-  /** Adds a separator menu item to the context menu. */
+  /** Adds a separator menu item to the menu. */
   public separator(options?: SeparatorMenuItemOptions): this {
     this.#items.add(new SeparatorMenuItem(options));
     return this;
   }
 
-  /** Adds a submenu menu item to the context menu. */
+  /** Adds a submenu menu item to the menu. */
   public submenu(
-    options: SubmenuMenuItemOptions,
-    build: BuilderFunction,
+    options: SubmenuMenuItemOptions<T>,
+    build: BuilderFunction<T>,
   ): this {
-    this.#items.add(new SubmenuMenuItem(options, build));
+    this.#items.add(new SubmenuMenuItem<T>(options, build));
     return this;
   }
 }
@@ -152,17 +152,17 @@ export class ContextMenuBuilder {
  *
  * @public
  */
-export class SubmenuMenuItem implements ContextMenuItem {
-  readonly #builder: ContextMenuBuilder;
+export class SubmenuMenuItem<T extends MenuType> implements MenuItemOf<T> {
+  readonly #builder: MenuBuilder<T>;
   readonly #id: string;
-  readonly #options: SubmenuMenuItemOptions;
+  readonly #options: SubmenuMenuItemOptions<T>;
 
   /**
    * Creates a submenu menu item. The builder function is used to add menu items
    * to the submenu.
    */
-  constructor(options: SubmenuMenuItemOptions, builder: BuilderFunction) {
-    this.#builder = builder(new ContextMenuBuilder());
+  constructor(options: SubmenuMenuItemOptions<T>, builder: BuilderFunction<T>) {
+    this.#builder = builder(new MenuBuilder());
     this.#id = options.id ?? uuid();
     this.#options = options;
   }
@@ -171,11 +171,11 @@ export class SubmenuMenuItem implements ContextMenuItem {
     return this.#id;
   }
 
-  public get click(): OnContextMenuItemClick | undefined {
+  public get click(): OnMenuItemClick<T> | undefined {
     return this.#options.click;
   }
 
-  public get items(): Set<ContextMenuItem> {
+  public get items(): Set<MenuItemOf<T>> {
     return this.#builder.items;
   }
 

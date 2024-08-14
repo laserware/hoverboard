@@ -1,20 +1,21 @@
 import type { MenuItemConstructorOptions } from "electron";
 
 import type {
-  ContextMenuItem,
-  OnContextMenuItemClick,
-  ContextMenuItemPlacementOptions,
-} from "../types.ts";
+  MenuItemOf,
+  MenuItemPlacementOptions,
+  MenuType,
+  OnMenuItemClick,
+} from "./types.ts";
 
-export type SeparatorMenuItemOptions = ContextMenuItemPlacementOptions;
+export type SeparatorMenuItemOptions = MenuItemPlacementOptions;
 
 /**
- * Represents a separator context menu item. A separator menu item is only used
+ * Represents a separator menu item. A separator menu item is only used
  * to split up groups of menu items and cannot be interacted with.
  *
  * @public
  */
-export class SeparatorMenuItem implements ContextMenuItem {
+export class SeparatorMenuItem<T extends MenuType> implements MenuItemOf<T> {
   readonly #options: SeparatorMenuItemOptions;
 
   constructor(options?: SeparatorMenuItemOptions) {
@@ -27,7 +28,7 @@ export class SeparatorMenuItem implements ContextMenuItem {
     return "";
   }
 
-  public get click(): OnContextMenuItemClick | undefined {
+  public get click(): OnMenuItemClick<T> | undefined {
     return undefined;
   }
 

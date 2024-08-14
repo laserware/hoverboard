@@ -19,7 +19,7 @@ import {
   IpcChannel,
   type ContextMenuItemClickedData,
   type ContextMenuShownData,
-} from "../types.ts";
+} from "../common/types.ts";
 
 interface CustomMenuBuilderOptions {
   /**

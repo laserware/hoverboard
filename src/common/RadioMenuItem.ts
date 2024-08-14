@@ -2,22 +2,27 @@ import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
 import type {
-  ContextMenuItem,
-  OnContextMenuItemClick,
-  ContextMenuItemPlacementOptions,
-} from "../types.ts";
+  MenuItemOf,
+  MenuItemPlacementOptions,
+  MenuType,
+  OnMenuItemClick,
+} from "./types.ts";
 
 /**
- * Options for creating a normal context menu item.
+ * Options for creating a radio menu item.
  *
  * @public
  */
-export interface NormalMenuItemOptions extends ContextMenuItemPlacementOptions {
+export interface RadioMenuItemOptions<T extends MenuType>
+  extends MenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
   /** Label to display in the menu item. */
   label: string;
+
+  /** Indicates whether the radio is checked. */
+  checked: boolean;
 
   /** Indicates if the menu item is enabled or disabled. */
   enabled?: boolean;
@@ -58,21 +63,21 @@ export interface NormalMenuItemOptions extends ContextMenuItemPlacementOptions {
   registerAccelerator?: boolean;
 
   /** Optional click handler for the menu item. */
-  click?: OnContextMenuItemClick;
+  click?: OnMenuItemClick<T>;
 }
 
 /**
- * Represents a normal context menu item. A "normal" item is essentially a
- * button that can be enabled/disabled or hidden and performs some operation
- * in response to a click event.
+ * Represents a radio menu item. A radio menu item is similar to a
+ * {@link CheckboxMenuItem} except only one instance in a radio group can be
+ * marked as checked (i.e. a single select list).
  *
  * @public
  */
-export class NormalMenuItem implements ContextMenuItem {
+export class RadioMenuItem<T extends MenuType> implements MenuItemOf<T> {
   readonly #id: string;
-  readonly #options: NormalMenuItemOptions;
+  readonly #options: RadioMenuItemOptions<T>;
 
-  constructor(options: NormalMenuItemOptions) {
+  constructor(options: RadioMenuItemOptions<T>) {
     this.#id = options.id ?? uuid();
     this.#options = options;
   }
@@ -81,12 +86,12 @@ export class NormalMenuItem implements ContextMenuItem {
     return this.#id;
   }
 
-  public get click(): OnContextMenuItemClick | undefined {
+  public get click(): OnMenuItemClick<T> | undefined {
     return this.#options.click;
   }
 
   public get template(): MenuItemConstructorOptions {
     const { click, ...rest } = this.#options;
-    return { ...rest, id: this.#id, type: "normal" };
+    return { ...rest, id: this.#id, type: "radio" };
   }
 }

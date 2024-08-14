@@ -2,24 +2,26 @@ import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
 import type {
-  ContextMenuItem,
-  OnContextMenuItemClick,
-  ContextMenuItemPlacementOptions,
-} from "../types.ts";
+  MenuItemOf,
+  MenuItemPlacementOptions,
+  MenuType,
+  OnMenuItemClick,
+} from "./types.ts";
 
 /**
- * Options for creating a radio context menu item.
+ * Options for creating a checkbox menu item.
  *
  * @public
  */
-export interface RadioMenuItemOptions extends ContextMenuItemPlacementOptions {
+export interface CheckboxMenuItemOptions<T extends MenuType>
+  extends MenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
   /** Label to display in the menu item. */
   label: string;
 
-  /** Indicates whether the radio is checked. */
+  /** Indicates whether the checkbox is checked. */
   checked: boolean;
 
   /** Indicates if the menu item is enabled or disabled. */
@@ -61,21 +63,20 @@ export interface RadioMenuItemOptions extends ContextMenuItemPlacementOptions {
   registerAccelerator?: boolean;
 
   /** Optional click handler for the menu item. */
-  click?: OnContextMenuItemClick;
+  click?: OnMenuItemClick<T>;
 }
 
 /**
- * Represents a radio context menu item. A radio menu item is similar to a
- * {@link CheckboxMenuItem} except only one instance in a radio group can be
- * marked as checked (i.e. a single select list).
+ * Represents a checkbox menu item. A checkbox menu item has the same features
+ * as a {@link NormalMenuItem} with the addition of a checkmark in the control.
  *
  * @public
  */
-export class RadioMenuItem implements ContextMenuItem {
+export class CheckboxMenuItem<T extends MenuType> implements MenuItemOf<T> {
   readonly #id: string;
-  readonly #options: RadioMenuItemOptions;
+  readonly #options: CheckboxMenuItemOptions<T>;
 
-  constructor(options: RadioMenuItemOptions) {
+  constructor(options: CheckboxMenuItemOptions<T>) {
     this.#id = options.id ?? uuid();
     this.#options = options;
   }
@@ -84,12 +85,12 @@ export class RadioMenuItem implements ContextMenuItem {
     return this.#id;
   }
 
-  public get click(): OnContextMenuItemClick | undefined {
+  public get click(): OnMenuItemClick<T> | undefined {
     return this.#options.click;
   }
 
   public get template(): MenuItemConstructorOptions {
     const { click, ...rest } = this.#options;
-    return { ...rest, id: this.#id, type: "radio" };
+    return { ...rest, id: this.#id, type: "checkbox" };
   }
 }
