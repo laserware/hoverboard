@@ -1,0 +1,14 @@
+{
+  "name": "hoverboard-example",
+  "description": "Example application using Hoverboard.",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Mike Rourke <mike.w.rourke@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.3.1"
+  }
+}

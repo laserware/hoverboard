@@ -1,5 +1,5 @@
 # Hoverboard
 
-Better context menus for Electron.
+Better menus for Electron.
 
 

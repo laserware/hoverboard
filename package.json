@@ -1,7 +1,8 @@
 {
   "name": "@laserware/hoverboard",
   "version": "1.0.0",
-  "description": "Better context menus for Electron.",
+  "description": "Better menus for Electron.",
+  "type": "module",
   "repository": {
     "url": "git+https://github.com/laserware/hoverboard.git",
     "type": "git"
@@ -42,7 +43,8 @@
     "prettier": "prettier --cache --write src",
     "prettier:ci": "prettier --check src",
     "eslint": "eslint --cache src",
-    "vitest": "vitest"
+    "vitest": "vitest",
+    "example": "npm run build && cd example && npm run start"
   },
   "dependencies": {
     "@laserware/arcade": "^3.5.0",

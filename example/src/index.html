@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    />
+    <title>Hoverboard Example</title>
+  </head>
+  <body>
+    <h1>Hoverboard Example</h1>
+    <p>Right-click on the element below to show a context menu.</p>
+    <button id="menu">Menu</button>
+    <script type="module" src="./renderer.js"></script>
+  </body>
+</html>
