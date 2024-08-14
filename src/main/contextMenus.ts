@@ -1,10 +1,13 @@
 import {
+  app,
   BrowserWindow,
   clipboard,
   ipcMain,
   Menu,
   nativeImage,
   shell,
+  type ContextMenuParams,
+  type Event as ElectronEvent,
   type IpcMainEvent,
   type KeyboardEvent,
   type MenuItem,
@@ -18,7 +21,7 @@ import {
   type ContextMenuShownData,
 } from "../types.ts";
 
-export interface CustomMenuBuilderOptions {
+interface CustomMenuBuilderOptions {
   /**
    * Adds the "Inspect Element" menu item to the custom context menu, which
    * is very useful for development.
@@ -33,13 +36,103 @@ export interface CustomMenuBuilderOptions {
 }
 
 /**
+ * We probably only want to show the "Inspect Element" menu item during development,
+ * just like in the custom menu.
+ */
+type DefaultMenuBuilderOptions = Pick<
+  CustomMenuBuilderOptions,
+  "appendInspectElementToMenus"
+>;
+
+interface ConfigureContextMenusOptions extends CustomMenuBuilderOptions {
+  /**
+   * Add a default context menu with common clipboard operations and the
+   * ability to inspect elements.
+   */
+  enableDefaultMenu: boolean;
+}
+
+/**
+ * Adds a listener to build a custom context menu (see {@link enableCustomContextMenuBuilder})
+ * and optionally a default context menu (see {@link enableDefaultContextMenuBuilder}) based
+ * on the specified options.
+ */
+export function configureContextMenus(
+  options: ConfigureContextMenusOptions,
+): void {
+  const {
+    appendInspectElementToMenus,
+    appendLinkHandlersToMenus,
+    enableDefaultMenu,
+  } = options;
+
+  if (enableDefaultMenu) {
+    enableDefaultContextMenuBuilder({ appendInspectElementToMenus });
+  }
+
+  enableCustomContextMenuBuilder({
+    appendInspectElementToMenus,
+    appendLinkHandlersToMenus,
+  });
+}
+
+/**
+ * Adds a fallback context menu to every element in the DOM that doesn't have
+ * a custom context menu explicitly specified. The menu contains standard
+ * clipboard operations and the ability to inspect elements (if specified).
+ */
+function enableDefaultContextMenuBuilder(
+  options: DefaultMenuBuilderOptions,
+): void {
+  app.on(
+    "browser-window-created",
+    (event: ElectronEvent, browserWindow: BrowserWindow): void => {
+      const webContents = browserWindow.webContents;
+
+      // Important Note! If you don't call `event.preventDefault` in the
+      // `contextmenu` event for the target element in the renderer, the
+      // default menu will be shown instead of the custom context menu, so
+      // make sure you do that!
+      webContents.addListener(
+        "context-menu",
+        async (event: ElectronEvent, params: ContextMenuParams) => {
+          // TODO: We probably want to add more items here at some point and
+          //       may need to tweak it based on the target element.
+          const template: MenuItemConstructorOptions[] = [
+            { role: "cut" },
+            { role: "copy" },
+            { role: "paste" },
+          ];
+
+          if (options.appendInspectElementToMenus) {
+            template.push(
+              { type: "separator" },
+              {
+                label: "Inspect Element",
+                click() {
+                  webContents.inspectElement(params.x, params.y);
+                },
+              },
+            );
+          }
+
+          const contextMenu = Menu.buildFromTemplate(template);
+
+          contextMenu.popup({ window: browserWindow });
+        },
+      );
+    },
+  );
+}
+
+/**
  * Adds an IPC listener that creates a custom context menu whenever it receives
  * a request from the renderer process with a template. The listener builds the
  * menu, shows it, and sends a message back to the renderer with the clicked
  * item details. Also adds a listener that explicitly closes the context menu
  * when specified.
  */
-export function enableCustomMenuBuilder(
+function enableCustomContextMenuBuilder(
   options: CustomMenuBuilderOptions,
 ): void {
   const openContextMenusById = new Map<string, Menu>();
