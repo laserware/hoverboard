@@ -1,7 +1,11 @@
 import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
-import type { ContextMenuItem, OnContextMenuItemClick } from "../types.ts";
+import type {
+  ContextMenuItem,
+  OnContextMenuItemClick,
+  ContextMenuItemPlacementOptions,
+} from "../types.ts";
 
 import {
   CheckboxMenuItem,
@@ -13,11 +17,16 @@ import {
 } from "./NormalMenuItem.ts";
 import { RadioMenuItem, type RadioMenuItemOptions } from "./RadioMenuItem.ts";
 import { RoleMenuItem, type RoleMenuItemOptions } from "./RoleMenuItem.ts";
-import { SeparatorMenuItem } from "./SeparatorMenuItem.ts";
+import {
+  SeparatorMenuItem,
+  type SeparatorMenuItemOptions,
+} from "./SeparatorMenuItem.ts";
 
 /**
  * Function called with the specified context menu builder to add menu items to
  * the associated context menu.
+ *
+ * @public
  */
 export type BuilderFunction = (
   builder: ContextMenuBuilder,
@@ -25,8 +34,11 @@ export type BuilderFunction = (
 
 /**
  * Options for creating a submenu context menu item.
+ *
+ * @public
  */
-export interface SubmenuMenuItemOptions {
+// prettier-ignore
+export interface SubmenuMenuItemOptions extends ContextMenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
@@ -78,7 +90,7 @@ export interface SubmenuMenuItemOptions {
  *   return builder;
  * });
  *
- * @class
+ * @internal
  */
 export class ContextMenuBuilder {
   readonly #items: Set<ContextMenuItem> = new Set();
@@ -119,8 +131,8 @@ export class ContextMenuBuilder {
   }
 
   /** Adds a separator menu item to the context menu. */
-  public separator(): this {
-    this.#items.add(new SeparatorMenuItem());
+  public separator(options?: SeparatorMenuItemOptions): this {
+    this.#items.add(new SeparatorMenuItem(options));
     return this;
   }
 
@@ -137,7 +149,8 @@ export class ContextMenuBuilder {
 /**
  * Represents a submenu menu item. Submenus can contain checkbox/normal/radio
  * menu items as well as other submenu menu items.
- * @class
+ *
+ * @public
  */
 export class SubmenuMenuItem implements ContextMenuItem {
   readonly #builder: ContextMenuBuilder;

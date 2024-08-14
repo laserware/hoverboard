@@ -1,12 +1,18 @@
 import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
-import type { ContextMenuItem, OnContextMenuItemClick } from "../types.ts";
+import type {
+  ContextMenuItem,
+  OnContextMenuItemClick,
+  ContextMenuItemPlacementOptions,
+} from "../types.ts";
 
 /**
  * Options for creating a normal context menu item.
+ *
+ * @public
  */
-export interface NormalMenuItemOptions {
+export interface NormalMenuItemOptions extends ContextMenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
@@ -28,6 +34,29 @@ export interface NormalMenuItemOptions {
   /** Optional icon image path or data URL to use for the menu item. */
   icon?: string;
 
+  /**
+   * Hover text for this menu item.
+   *
+   * Only supported on macOS.
+   */
+  toolTip?: string;
+
+  /**
+   * Prevents the accelerator from triggering the item if the item is not visible
+   * when value is `false`.
+   *
+   * Only supported on macOS.
+   */
+  acceleratorWorksWhenHidden?: boolean;
+
+  /**
+   * If false, the accelerator won't be registered with the system, but it will
+   * still be displayed. Defaults to true.
+   *
+   * Only supported on Linux and Windows.
+   */
+  registerAccelerator?: boolean;
+
   /** Optional click handler for the menu item. */
   click?: OnContextMenuItemClick;
 }
@@ -36,7 +65,8 @@ export interface NormalMenuItemOptions {
  * Represents a normal context menu item. A "normal" item is essentially a
  * button that can be enabled/disabled or hidden and performs some operation
  * in response to a click event.
- * @class
+ *
+ * @public
  */
 export class NormalMenuItem implements ContextMenuItem {
   readonly #id: string;

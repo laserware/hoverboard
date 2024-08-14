@@ -1,12 +1,18 @@
 import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
-import type { ContextMenuItem, OnContextMenuItemClick } from "../types.ts";
+import type {
+  ContextMenuItem,
+  OnContextMenuItemClick,
+  ContextMenuItemPlacementOptions,
+} from "../types.ts";
 
 /**
  * Options for creating a radio context menu item.
+ *
+ * @public
  */
-export interface RadioMenuItemOptions {
+export interface RadioMenuItemOptions extends ContextMenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
@@ -31,6 +37,29 @@ export interface RadioMenuItemOptions {
   /** Optional icon image path or data URL to use for the menu item. */
   icon?: string;
 
+  /**
+   * Hover text for this menu item.
+   *
+   * Only supported on macOS.
+   */
+  toolTip?: string;
+
+  /**
+   * Prevents the accelerator from triggering the item if the item is not visible
+   * when value is `false`.
+   *
+   * Only supported on macOS.
+   */
+  acceleratorWorksWhenHidden?: boolean;
+
+  /**
+   * If false, the accelerator won't be registered with the system, but it will
+   * still be displayed. Defaults to true.
+   *
+   * Only supported on Linux and Windows.
+   */
+  registerAccelerator?: boolean;
+
   /** Optional click handler for the menu item. */
   click?: OnContextMenuItemClick;
 }
@@ -39,7 +68,8 @@ export interface RadioMenuItemOptions {
  * Represents a radio context menu item. A radio menu item is similar to a
  * {@link CheckboxMenuItem} except only one instance in a radio group can be
  * marked as checked (i.e. a single select list).
- * @class
+ *
+ * @public
  */
 export class RadioMenuItem implements ContextMenuItem {
   readonly #id: string;

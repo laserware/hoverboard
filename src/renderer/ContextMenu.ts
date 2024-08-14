@@ -25,7 +25,10 @@ import {
 } from "./NormalMenuItem.ts";
 import { RadioMenuItem, type RadioMenuItemOptions } from "./RadioMenuItem.ts";
 import { RoleMenuItem, type RoleMenuItemOptions } from "./RoleMenuItem.ts";
-import { SeparatorMenuItem } from "./SeparatorMenuItem.ts";
+import {
+  SeparatorMenuItem,
+  type SeparatorMenuItemOptions,
+} from "./SeparatorMenuItem.ts";
 import {
   ContextMenuBuilder,
   SubmenuMenuItem,
@@ -44,7 +47,8 @@ type ContextMenuEventMap = {
 
 /**
  * Provides the means to create and show custom context menus.
- * @class
+ *
+ * @public
  */
 export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
   readonly #builder: ContextMenuBuilder;
@@ -134,6 +138,11 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
         this.#builder = builder(new ContextMenuBuilder());
       }
     }
+
+    if (this.#builder === undefined) {
+      // prettier-ignore
+      throw new Error("Menu could not be created. This may be caused by not returning the builder from the ContextMenu.create callback");
+    }
   }
 
   /** Returns a new checkbox menu item with the specified options. */
@@ -157,8 +166,10 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
   }
 
   /** Returns a new separator menu item with the specified options. */
-  public static separator(): SeparatorMenuItem {
-    return new SeparatorMenuItem();
+  public static separator(
+    options?: SeparatorMenuItemOptions,
+  ): SeparatorMenuItem {
+    return new SeparatorMenuItem(options);
   }
 
   /** Returns a new submenu menu item with the specified options. */
@@ -184,8 +195,9 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
    * renderer process. We expose this as a settable property in case you don't
    * want to override the IPC API in the {@link ContextMenu#create} method.
    */
-  public set ipcApi(value: IpcApi) {
-    this.#ipcApi = value;
+  public withIpcApi(ipcApi: IpcApi): this {
+    this.#ipcApi = ipcApi;
+    return this;
   }
 
   /** Adds the specified menu item to the context menu. */
@@ -231,6 +243,8 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
     for (const menuItem of this.items.values()) {
       this.#template.push(menuItem.template);
     }
+
+    console.log(this.#template);
 
     return this;
   }

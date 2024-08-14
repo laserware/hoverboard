@@ -1,12 +1,19 @@
 import { uuid } from "@laserware/arcade";
 import type { MenuItemConstructorOptions } from "electron";
 
-import type { ContextMenuItem, OnContextMenuItemClick } from "../types.ts";
+import type {
+  ContextMenuItem,
+  OnContextMenuItemClick,
+  ContextMenuItemPlacementOptions,
+} from "../types.ts";
 
 /**
  * Options for creating a checkbox context menu item.
+ *
+ * @public
  */
-export interface CheckboxMenuItemOptions {
+// prettier-ignore
+export interface CheckboxMenuItemOptions extends ContextMenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
@@ -31,6 +38,29 @@ export interface CheckboxMenuItemOptions {
   /** Optional icon image path or data URL to use for the menu item. */
   icon?: string;
 
+  /**
+   * Hover text for this menu item.
+   *
+   * Only supported on macOS.
+   */
+  toolTip?: string;
+
+  /**
+   * Prevents the accelerator from triggering the item if the item is not visible
+   * when value is `false`.
+   *
+   * Only supported on macOS.
+   */
+  acceleratorWorksWhenHidden?: boolean;
+
+  /**
+   * If false, the accelerator won't be registered with the system, but it will
+   * still be displayed. Defaults to true.
+   *
+   * Only supported on Linux and Windows.
+   */
+  registerAccelerator?: boolean;
+
   /** Optional click handler for the menu item. */
   click?: OnContextMenuItemClick;
 }
@@ -39,7 +69,8 @@ export interface CheckboxMenuItemOptions {
  * Represents a checkbox context menu item. A checkbox menu item has the same
  * features as a {@link NormalMenuItem} with the addition of a checkmark in
  * the control.
- * @class
+ *
+ * @public
  */
 export class CheckboxMenuItem implements ContextMenuItem {
   readonly #id: string;

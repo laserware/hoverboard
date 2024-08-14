@@ -5,6 +5,38 @@ import type {
 } from "electron";
 
 /**
+ * Options for placing the context menu item in a specific location relative
+ * to other menu items or groups.
+ */
+export interface ContextMenuItemPlacementOptions {
+  /**
+   * Inserts the item before the item with the specified ID. If the referenced
+   * item doesn't exist the item will be inserted at the end of the menu.
+   * Also implies that the menu item in question should be placed in the
+   * same “group” as the item.
+   */
+  before?: string[];
+
+  /**
+   * Inserts the item after the item with the specified ID. If the referenced
+   * item doesn't exist the item will be inserted at the end of the menu.
+   */
+  after?: string[];
+
+  /**
+   * Provides a means for a single context menu to declare the placement of their
+   * containing group before the containing group of the item with the specified ID.
+   */
+  beforeGroupContaining?: string[];
+
+  /**
+   * Provides a means for a single context menu to declare the placement of their
+   * containing group after the containing group of the item with the specified ID.
+   */
+  afterGroupContaining?: string[];
+}
+
+/**
  * This data is sent to the main process to define the custom context menu that
  * should be built/shown.
  */
@@ -14,7 +46,7 @@ export interface ContextMenuShownData {
 
   /**
    * X and Y location of the mouse cursor (used to specify where the menu should
-   * be shown.
+   * be shown).
    */
   position: Point;
 

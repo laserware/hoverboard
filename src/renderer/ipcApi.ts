@@ -12,7 +12,7 @@ import type { IpcRendererEvent } from "electron";
  * cannot pass references from the `ipcRenderer` API directly because binding,
  * so this doesn't work:
  *
- * ```ts
+ * @example Wrong!
  * // DON'T DO THIS!
  * const { ipcRenderer } = require("electron");
  *
@@ -21,10 +21,9 @@ import type { IpcRendererEvent } from "electron";
  *   removeListener: ipcRenderer.removeListener,
  *   send: ipcRenderer.send,
  * }, (builder) => {});
- * ```
  *
  * Here is the correct way to do it (see {@link getDefaultIpcApi}):
- * ```ts
+ * @example Right!
  * // DO THIS INSTEAD!
  * const { ipcRenderer } = require("electron");
  *
@@ -45,7 +44,6 @@ import type { IpcRendererEvent } from "electron";
  *     ipcRenderer.send(channel, ...args);
  *   },
  * };
- * ```
  */
 export interface IpcApi {
   /** Override the default `addListener`/`on` function. */
