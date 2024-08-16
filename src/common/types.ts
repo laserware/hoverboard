@@ -8,16 +8,16 @@ import type {
 
 /**
  * Menu type of the manu. Context menus are created/shown in the renderer process
- * where the click handler code resides. The main menu is created in the main
- * process and represents the menu in the title bar of the application.
+ * where the click handler code resides. The application menu is created in the
+ * main process and represents the menu in the title bar of the application.
  */
-export type MenuType = "context" | "main";
+export type MenuType = "context" | "application";
 
 /**
- * This is the click event fired in the _main_ process when a main menu
+ * This is the click event fired in the _main_ process when an application menu
  * item is clicked.
  */
-export type OnMainMenuItemClick = (
+export type OnApplicationMenuItemClick = (
   menuItem: MenuItem,
   browserWindow: BrowserWindow | undefined,
   event: KeyboardEvent,
@@ -36,7 +36,7 @@ export type OnContextMenuItemClick = (
 export type OnMenuItemClick<T extends MenuType> = T extends "context"
   ? OnContextMenuItemClick
   : T extends "main"
-    ? OnMainMenuItemClick
+    ? OnApplicationMenuItemClick
     : never;
 
 /**
@@ -118,7 +118,7 @@ export interface ContextMenuItemClickedData {
 }
 
 /**
- * Interface for defining a context or main menu. Some menu items don't have an
+ * Interface for defining a context or application menu. Some menu items don't have an
  * associated click event or an ID, but we want all menu items to adhere
  * to the same interface so we can track click handlers and access the template
  * to send to the main process (for context menus) to build the menu.
@@ -128,6 +128,10 @@ export interface MenuItemOf<T extends MenuType> {
   get click(): OnMenuItemClick<T> | undefined;
   get template(): MenuItemConstructorOptions;
 }
+
+export type ContextMenuItem = MenuItemOf<"context">;
+
+export type ApplicationMenuItem = MenuItemOf<"application">;
 
 export enum IpcChannel {
   ForContextMenuShown = "contextMenu/shown",

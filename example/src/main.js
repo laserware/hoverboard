@@ -1,6 +1,9 @@
 const { app, BrowserWindow } = require("electron");
 
-const { configureContextMenus } = require("../../dist/main.cjs");
+const {
+  configureContextMenus,
+  ApplicationMenu,
+} = require("../../dist/main.cjs");
 
 function createWindow() {
   // Create the browser window.
@@ -24,6 +27,14 @@ app.whenReady().then(() => {
   });
 
   createWindow();
+
+  ApplicationMenu.create((builder) => {
+    return builder.submenu({ label: "Test" }, (builder) => {
+      return builder.role({ role: "about" });
+    });
+  })
+    .build()
+    .set();
 
   app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) {

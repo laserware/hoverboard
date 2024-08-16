@@ -175,6 +175,7 @@ export class SubmenuMenuItem<T extends MenuType> implements MenuItemOf<T> {
     return this.#options.click;
   }
 
+  /** Menu items in the menu. */
   public get items(): Set<MenuItemOf<T>> {
     return this.#builder.items;
   }

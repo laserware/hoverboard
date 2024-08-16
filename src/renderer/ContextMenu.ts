@@ -261,8 +261,6 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
       this.#template.push(menuItem.template);
     }
 
-    console.log(this.#template);
-
     return this;
   }
 

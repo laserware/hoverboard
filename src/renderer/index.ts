@@ -25,4 +25,4 @@ export {
   type MenuBuilder,
   type SubmenuMenuItemOptions,
 } from "../common/SubmenuMenuItem.ts";
-export type { MenuItemOf } from "../common/types.ts";
+export type { ContextMenuItem } from "../common/types.ts";
