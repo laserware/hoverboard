@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, MenuItem } = require("electron");
 
 const {
   configureContextMenus,
@@ -29,9 +29,23 @@ app.whenReady().then(() => {
   createWindow();
 
   ApplicationMenu.create((builder) => {
-    return builder.submenu({ label: "Test" }, (builder) => {
-      return builder.role({ role: "about" });
-    });
+    builder
+      .role({ role: "appMenu" })
+      .role({ role: "fileMenu" })
+      .role({ role: "editMenu" })
+      .role({ role: "viewMenu" })
+      .role({ role: "windowMenu" })
+      .submenu({ role: "help" }, (builder) =>
+        builder.normal({
+          label: "Learn More",
+          async click() {
+            const { shell } = require("electron");
+            await shell.openExternal("https://electronjs.org");
+          },
+        }),
+      );
+
+    return builder;
   })
     .build()
     .set();

@@ -18,8 +18,8 @@ describe("the ContextMenu class", () => {
         .normal({ label: "Normal 1" })
         .normal({ label: "Normal 2" })
         .normal({ label: "Normal 3", visible: false })
-        .role({ role: "copy", enabled: true })
-        .role({ role: "paste", enabled: false })
+        .role({ role: "copy" })
+        .role({ role: "paste" })
         .separator()
         .checkbox({ label: "Check 1", checked: true })
         .checkbox({ label: "Check 2", checked: false })
@@ -75,7 +75,7 @@ describe("the ContextMenu class", () => {
     addListener.mockClear();
     send.mockClear();
 
-    cm.ipcApi = ipcApi;
+    cm.withIpcApi(ipcApi);
     cm.show(10, 50);
 
     expect(addListener).toHaveBeenCalled();

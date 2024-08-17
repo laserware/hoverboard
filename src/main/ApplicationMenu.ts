@@ -1,11 +1,4 @@
-import {
-  app,
-  Menu,
-  type BrowserWindow,
-  type KeyboardEvent,
-  type MenuItem as ElectronMenuItem,
-  type MenuItemConstructorOptions,
-} from "electron";
+import { Menu, type MenuItemConstructorOptions } from "electron";
 
 import {
   CheckboxMenuItem,
@@ -34,18 +27,6 @@ import {
   type SubmenuMenuItemOptions,
 } from "../common/SubmenuMenuItem.ts";
 import type { MenuItemOf } from "../common/types.ts";
-
-type ApplicationMenuEventMap = {
-  /**
-   * Fired when a menu item is clicked. You can use this as an alternative
-   * (or in addition to) `click` events assigned to individual menu items.
-   */
-  click: CustomEvent<{
-    menuItem: MenuItemOf<"application">;
-    browserWindow: BrowserWindow | undefined;
-    event: KeyboardEvent;
-  }>;
-};
 
 /**
  * Provides the means to create a custom application menu.
@@ -129,11 +110,14 @@ export class ApplicationMenu extends EventTarget {
   }
 
   /**
-   * MenuItem instances in the menu (i.e. the `items` property of an Electron
-   * `MainMenu` instance).
+   * Returns the Electron Menu instance (if the menu has been built).
    */
-  public get menuItems(): ElectronMenuItem[] {
-    return this.#menu?.items ?? [];
+  public get electronMenu(): Menu {
+    if (this.#menu === null) {
+      throw new Error("Menu has not been built");
+    }
+
+    return this.#menu;
   }
 
   /** Object representation of the menu. Useful for testing/verification. */
@@ -155,6 +139,8 @@ export class ApplicationMenu extends EventTarget {
   public build(): this {
     const menuItemIds = new Set<string>();
 
+    this.#template = [];
+
     // Recurse through all the menu items and ensure there are not menu items
     // with duplicate IDs in the menu:
     const walkMenuItems = (menuItems: Set<MenuItemOf<"application">>): void => {
@@ -168,6 +154,8 @@ export class ApplicationMenu extends EventTarget {
           menuItemIds.add(menuItem.id);
         }
 
+        this.#template.push(menuItem.template);
+
         if (menuItem instanceof SubmenuMenuItem) {
           walkMenuItems(menuItem.items);
         }
@@ -176,102 +164,19 @@ export class ApplicationMenu extends EventTarget {
 
     walkMenuItems(this.items);
 
-    this.#template = [];
-    for (const menuItem of this.items.values()) {
-      const itemTemplate = { ...menuItem.template, click: menuItem.click };
-      this.#template.push(itemTemplate);
-    }
+    this.#menu = Menu.buildFromTemplate(this.#template);
 
     return this;
   }
 
   public set(): this {
-    const menu = Menu.buildFromTemplate(this.#template);
-    Menu.setApplicationMenu(menu);
+    if (this.#menu === null) {
+      // prettier-ignore
+      throw new Error("You must call build on the ApplicationMenu before setting")
+    }
+
+    Menu.setApplicationMenu(this.#menu);
 
     return this;
   }
-}
-
-function getDefaultTemplate(): MenuItemConstructorOptions[] {
-  const isMac = process.platform === "darwin";
-
-  const template = [
-    ...(isMac
-      ? [
-          {
-            label: app.name,
-            submenu: [
-              { role: "about" },
-              { type: "separator" },
-              { role: "services" },
-              { type: "separator" },
-              { role: "hide" },
-              { role: "hideOthers" },
-              { role: "unhide" },
-              { type: "separator" },
-              { role: "quit" },
-            ],
-          },
-        ]
-      : []),
-    {
-      label: "File",
-      submenu: [isMac ? { role: "close" } : { role: "quit" }],
-    },
-    {
-      label: "Edit",
-      submenu: [
-        { role: "undo" },
-        { role: "redo" },
-        { type: "separator" },
-        { role: "cut" },
-        { role: "copy" },
-        { role: "paste" },
-        ...(isMac
-          ? [
-              { role: "pasteAndMatchStyle" },
-              { role: "delete" },
-              { role: "selectAll" },
-              { type: "separator" },
-              {
-                label: "Speech",
-                submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
-              },
-            ]
-          : [{ role: "delete" }, { type: "separator" }, { role: "selectAll" }]),
-      ],
-    },
-    {
-      label: "View",
-      submenu: [
-        { role: "reload" },
-        { role: "forceReload" },
-        { role: "toggleDevTools" },
-        { type: "separator" },
-        { role: "resetZoom" },
-        { role: "zoomIn" },
-        { role: "zoomOut" },
-        { type: "separator" },
-        { role: "togglefullscreen" },
-      ],
-    },
-    {
-      label: "Window",
-      submenu: [
-        { role: "minimize" },
-        { role: "zoom" },
-        ...(isMac
-          ? [
-              { type: "separator" },
-              { role: "front" },
-              { type: "separator" },
-              { role: "window" },
-            ]
-          : [{ role: "close" }]),
-      ],
-    },
-  ];
-
-  return template as MenuItemConstructorOptions[];
 }
