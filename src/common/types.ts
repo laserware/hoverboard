@@ -14,6 +14,12 @@ import type {
 export type MenuType = "context" | "application";
 
 /**
+ * Role for the menu item (if a {@link RoleMenuItem} or {@link SubmenuMenuItem}
+ * with a role).
+ */
+export type MenuItemRole = MenuItemConstructorOptions["role"];
+
+/**
  * This is the click event fired in the _main_ process when an application menu
  * item is clicked.
  */
@@ -21,7 +27,7 @@ export type OnApplicationMenuItemClick = (
   menuItem: MenuItem,
   browserWindow: BrowserWindow | undefined,
   event: KeyboardEvent,
-) => void;
+) => void | Promise<void>;
 
 /**
  * This is the click event fired in the _renderer_ process when a context menu
@@ -31,7 +37,7 @@ export type OnApplicationMenuItemClick = (
 export type OnContextMenuItemClick = (
   menuItem: MenuItemConstructorOptions,
   event: KeyboardEvent,
-) => void;
+) => void | Promise<void>;
 
 export type OnMenuItemClick<T extends MenuType> = T extends "context"
   ? OnContextMenuItemClick

@@ -7,6 +7,7 @@ import type {
   MenuType,
   OnMenuItemClick,
 } from "./types.ts";
+import { getTemplateByProcess } from "./utilities.ts";
 
 /**
  * Options for creating a radio menu item.
@@ -91,7 +92,10 @@ export class RadioMenuItem<T extends MenuType> implements MenuItemOf<T> {
   }
 
   public get template(): MenuItemConstructorOptions {
-    const { click, ...rest } = this.#options;
-    return { ...rest, id: this.#id, type: "radio" };
+    return getTemplateByProcess({
+      ...this.#options,
+      id: this.#id,
+      type: "radio",
+    });
   }
 }

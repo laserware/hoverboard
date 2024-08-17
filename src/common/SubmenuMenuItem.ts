@@ -18,9 +18,11 @@ import {
 import type {
   MenuItemOf,
   MenuItemPlacementOptions,
+  MenuItemRole,
   MenuType,
   OnMenuItemClick,
 } from "./types.ts";
+import { getTemplateByProcess } from "./utilities.ts";
 
 /**
  * Function called with the specified menu builder to add menu items to the
@@ -54,6 +56,9 @@ export interface SubmenuMenuItemOptions<T extends MenuType> extends MenuItemPlac
   /** Optional keyboard shortcut to use for the menu item. */
   accelerator?: string;
 
+  /** Role for the menu item. This can only be specified in {@link ApplicationMenu}. */
+  role?: MenuItemRole;
+
   /** Sublabel to display in the menu item. */
   sublabel?: string;
 
@@ -73,9 +78,9 @@ export interface SubmenuMenuItemOptions<T extends MenuType> extends MenuItemPlac
  * need the type for a function signature.
  *
  * @example
- * import { ContextMenu, type MenuBuilder } from "@laserware/hoverboard/renderer";
+ * import { ContextMenu, type ContextMenuBuilder } from "@laserware/hoverboard/renderer";
  *
- * function addCustomItems(builder: MenuBuilder<"context">): void {
+ * function addCustomItems(builder: ContextMenuBuilder): void {
  *   builder
  *    .normal({ label: "Custom 1" })
  *    .normal({ label: "Custom 2" })
@@ -181,13 +186,16 @@ export class SubmenuMenuItem<T extends MenuType> implements MenuItemOf<T> {
   }
 
   public get template(): MenuItemConstructorOptions {
-    const { click, ...rest } = this.#options;
-
     const submenu = [];
     for (const menuItem of this.items.values()) {
       submenu.push(menuItem.template);
     }
 
-    return { ...rest, id: this.#id, submenu, type: "submenu" };
+    return getTemplateByProcess({
+      ...this.#options,
+      id: this.#id,
+      submenu,
+      type: "submenu",
+    } as const);
   }
 }

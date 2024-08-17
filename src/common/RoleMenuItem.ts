@@ -3,6 +3,7 @@ import type { MenuItemConstructorOptions } from "electron";
 import type {
   MenuItemOf,
   MenuItemPlacementOptions,
+  MenuItemRole,
   MenuType,
   OnMenuItemClick,
 } from "./types.ts";
@@ -14,8 +15,11 @@ import type {
  * @public
  */
 export interface RoleMenuItemOptions extends MenuItemPlacementOptions {
+  /** Optional ID for the menu item. */
+  id?: string;
+
   /** Role for the menu item. */
-  role: Required<MenuItemConstructorOptions["role"]>;
+  role: Required<MenuItemRole>;
 
   /** Optional keyboard shortcut to use for the menu item. */
   accelerator?: string;
@@ -57,9 +61,8 @@ export class RoleMenuItem<T extends MenuType> implements MenuItemOf<T> {
     this.#options = options;
   }
 
-  // We return an empty string because role menu items don't need a unique ID.
   public get id(): string {
-    return "";
+    return this.#options.id ?? "";
   }
 
   // Role menu items cannot have a custom click event because it performs a
