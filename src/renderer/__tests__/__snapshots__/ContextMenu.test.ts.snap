@@ -19,11 +19,9 @@ exports[`the ContextMenu class > builds a context menu with a template that matc
     "visible": false,
   },
   {
-    "enabled": true,
     "role": "copy",
   },
   {
-    "enabled": false,
     "role": "paste",
   },
   {
