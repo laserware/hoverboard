@@ -36,9 +36,9 @@ import {
 } from "../common/SubmenuMenuItem.ts";
 import {
   IpcChannel,
+  type ContextMenuItem,
   type ContextMenuItemClickedData,
   type ContextMenuShownData,
-  type MenuItemOf,
   type OnContextMenuItemClick,
 } from "../common/types.ts";
 
@@ -50,7 +50,7 @@ type ContextMenuEventMap = {
    * (or in addition to) `click` events assigned to individual context menu
    * items.
    */
-  click: CustomEvent<{ menuItem: MenuItemOf<"context">; event: KeyboardEvent }>;
+  click: CustomEvent<{ menuItem: ContextMenuItem; event: KeyboardEvent }>;
 };
 
 /**
@@ -198,7 +198,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
   }
 
   /** Menu items in the context menu. */
-  public get items(): Set<MenuItemOf<"context">> {
+  public get items(): Set<ContextMenuItem> {
     return this.#builder.items;
   }
 
@@ -218,7 +218,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
   }
 
   /** Adds the specified menu item to the context menu. */
-  public add(menuItem: MenuItemOf<"context">): this {
+  public add(menuItem: ContextMenuItem): this {
     this.items.add(menuItem);
 
     return this;
@@ -235,7 +235,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
 
     // Recurse through all the menu items, save click handlers by ID, and ensure
     // there are not menu items with duplicate IDs in the menu:
-    const walkMenuItems = (menuItems: Set<MenuItemOf<"context">>): void => {
+    const walkMenuItems = (menuItems: Set<ContextMenuItem>): void => {
       for (const menuItem of menuItems.values()) {
         // Some menu items don't require an ID, such as a separator, so we set that
         // to an empty string in the menu item class. If we don't skip those, it's

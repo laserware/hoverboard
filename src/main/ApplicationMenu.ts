@@ -26,14 +26,14 @@ import {
   type BuilderFunction,
   type SubmenuMenuItemOptions,
 } from "../common/SubmenuMenuItem.ts";
-import type { MenuItemOf } from "../common/types.ts";
+import type { ApplicationMenuItem } from "../common/types.ts";
 
 /**
  * Provides the means to create a custom application menu.
  *
  * @public
  */
-export class ApplicationMenu extends EventTarget {
+export class ApplicationMenu {
   readonly #builder: MenuBuilder<"application">;
 
   #menu: Menu | null = null;
@@ -51,8 +51,6 @@ export class ApplicationMenu extends EventTarget {
   }
 
   constructor(builder: BuilderFunction<"application">) {
-    super();
-
     this.#builder = builder(new MenuBuilder());
 
     if (this.#builder === undefined) {
@@ -105,13 +103,11 @@ export class ApplicationMenu extends EventTarget {
   }
 
   /** Menu items in the main menu. */
-  public get items(): Set<MenuItemOf<"application">> {
+  public get items(): Set<ApplicationMenuItem> {
     return this.#builder.items;
   }
 
-  /**
-   * Returns the Electron Menu instance (if the menu has been built).
-   */
+  /** Returns the Electron Menu instance (if the menu has been built). */
   public get electronMenu(): Menu {
     if (this.#menu === null) {
       throw new Error("Menu has not been built");
@@ -126,7 +122,7 @@ export class ApplicationMenu extends EventTarget {
   }
 
   /** Adds the specified menu item to the main menu. */
-  public add(menuItem: MenuItemOf<"application">): this {
+  public add(menuItem: ApplicationMenuItem): this {
     this.items.add(menuItem);
 
     return this;
@@ -143,7 +139,7 @@ export class ApplicationMenu extends EventTarget {
 
     // Recurse through all the menu items and ensure there are not menu items
     // with duplicate IDs in the menu:
-    const walkMenuItems = (menuItems: Set<MenuItemOf<"application">>): void => {
+    const walkMenuItems = (menuItems: Set<ApplicationMenuItem>): void => {
       for (const menuItem of menuItems.values()) {
         // Some menu items don't require an ID, such as a separator, so we set that
         // to an empty string in the menu item class. If we don't skip those, it's

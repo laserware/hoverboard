@@ -77,7 +77,7 @@ export interface SubmenuMenuItemOptions<T extends MenuType> extends MenuItemPlac
  * Only the type is exported. You should never use this class directly, but you
  * need the type for a function signature.
  *
- * @example
+ * @example Context Menu
  * import { ContextMenu, type ContextMenuBuilder } from "@laserware/hoverboard/renderer";
  *
  * function addCustomItems(builder: ContextMenuBuilder): void {

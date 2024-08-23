@@ -11,6 +11,7 @@
     "lib": ["DOM", "ESNext"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "noEmit": true,
     "outDir": "./dist",
     "removeComments": false,
     "resolveJsonModule": true,
@@ -18,7 +19,7 @@
     "sourceMap": false,
     "strict": true,
     "target": "ESNext",
-    "types": ["vitest/globals"],
+    "types": ["node", "vitest/globals"],
     "verbatimModuleSyntax": true
   },
   "include": [
