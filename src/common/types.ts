@@ -142,5 +142,6 @@ export type ApplicationMenuItem = MenuItemOf<"application">;
 export enum IpcChannel {
   ForContextMenuShown = "hoverboard/contextMenu/shown",
   ForContextMenuHidden = "hoverboard/contextMenu/hidden",
+  ForContextMenuClosed = "hoverboard/contextMenu/closed",
   ForContextMenuItemClicked = "hoverboard/contextMenu/itemClicked",
 }

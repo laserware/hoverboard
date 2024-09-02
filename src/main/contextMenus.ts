@@ -168,6 +168,8 @@ function enableCustomContextMenuBuilder(
         // Fired when the context menu is closed:
         callback() {
           openContextMenusById.delete(data.id);
+
+          browserWindow.webContents.send(IpcChannel.ForContextMenuClosed);
         },
       });
     },

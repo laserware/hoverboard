@@ -73,5 +73,13 @@ function createContextMenu(event) {
     return builder;
   });
 
+  menu.addEventListener("open", () => {
+    console.log("Opened");
+  });
+
+  menu.addEventListener("close", () => {
+    console.log("Closed");
+  });
+
   menu.build().attach(event.currentTarget).show(event.clientX, event.clientY);
 }

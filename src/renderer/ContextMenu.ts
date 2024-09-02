@@ -51,6 +51,8 @@ type ContextMenuEventMap = {
    * items.
    */
   click: CustomEvent<{ menuItem: ContextMenuItem; event: KeyboardEvent }>;
+  open: Event;
+  close: Event;
 };
 
 /**
@@ -308,6 +310,13 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
       this.#ipcApi = getDefaultIpcApi();
     }
 
+    this.dispatchEvent(new Event("open"));
+
+    this.#ipcApi.addListener(
+      IpcChannel.ForContextMenuClosed,
+      this.#handleClosed,
+    );
+
     this.#ipcApi.addListener(
       IpcChannel.ForContextMenuItemClicked,
       this.#handleMenuItemClicked,
@@ -339,6 +348,15 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
 
     return this;
   }
+
+  #handleClosed = (): void => {
+    this.dispatchEvent(new Event("close"));
+
+    this.#ipcApi?.removeListener(
+      IpcChannel.ForContextMenuClosed,
+      this.#handleClosed,
+    );
+  };
 
   /* istanbul ignore next -- @preserve: This cannot be tested with Vitest (only E2E). */
   #handleMenuItemClicked = (
