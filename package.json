@@ -1,6 +1,6 @@
 {
   "name": "@laserware/hoverboard",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Better menus for Electron.",
   "type": "module",
   "repository": {
