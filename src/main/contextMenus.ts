@@ -1,5 +1,6 @@
 import {
   app,
+  BaseWindow,
   BrowserWindow,
   clipboard,
   ipcMain,
@@ -270,7 +271,7 @@ function assignClickHandlerToMenuItem(
 ): MenuItemConstructorOptions {
   const handleMenuItemClick = (
     menuItem: MenuItem,
-    browserWindow: BrowserWindow | undefined,
+    baseWindow: BaseWindow | undefined,
     event: KeyboardEvent,
   ): void => {
     // We send the menu item to the renderer _without_ the click listener because

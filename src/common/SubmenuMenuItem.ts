@@ -146,6 +146,7 @@ export class MenuBuilder<T extends MenuType> {
     options: SubmenuMenuItemOptions<T>,
     build: BuilderFunction<T>,
   ): this {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     this.#items.add(new SubmenuMenuItem<T>(options, build));
     return this;
   }

@@ -8,6 +8,7 @@ import type {
   MenuItemConstructorOptions,
 } from "electron";
 
+import { getDefaultIpcApi, type IpcApi } from "./ipcApi.ts";
 import {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
@@ -41,8 +42,6 @@ import {
   type ContextMenuShownData,
   type OnContextMenuItemClick,
 } from "../common/types.ts";
-
-import { getDefaultIpcApi, type IpcApi } from "./ipcApi.ts";
 
 type ContextMenuEventMap = {
   /**

@@ -19,13 +19,13 @@
     "sourceMap": false,
     "strict": true,
     "target": "ESNext",
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
     "verbatimModuleSyntax": true
   },
   "include": [
     "./src/**/*.ts",
-    "./renderer.d.ts",
     "./main.d.ts",
+    "./renderer.d.ts",
     "./tsup.config.ts",
     "./vitest.config.mts",
     "./vitest.setup.mts"
