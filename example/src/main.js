@@ -1,4 +1,4 @@
-const { app, BrowserWindow, MenuItem } = require("electron");
+const { app, BrowserWindow } = require("electron");
 
 const {
   configureContextMenus,

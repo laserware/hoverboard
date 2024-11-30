@@ -8,7 +8,6 @@ import type {
   MenuItemConstructorOptions,
 } from "electron";
 
-import { getDefaultIpcApi, type IpcApi } from "./ipcApi.ts";
 import {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
@@ -42,6 +41,8 @@ import {
   type ContextMenuShownData,
   type OnContextMenuItemClick,
 } from "../common/types.ts";
+
+import { getDefaultIpcApi, type IpcApi } from "./ipcApi.ts";
 
 type ContextMenuEventMap = {
   /**
@@ -96,6 +97,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
     ipcApi: IpcApi,
     builder: BuilderFunction<"context">,
   ): ContextMenu;
+
   /**
    * Returns a new context menu with the specified name and builder function.
    *
@@ -106,6 +108,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
     name: string,
     builder: BuilderFunction<"context">,
   ): ContextMenu;
+
   public static create(
     name: string,
     builderOrIpcApi: BuilderFunction<"context"> | IpcApi,
