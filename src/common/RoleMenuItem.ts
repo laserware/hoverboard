@@ -6,7 +6,7 @@ import type {
   MenuItemRole,
   MenuType,
   OnMenuItemClick,
-} from "./types.ts";
+} from "./types.js";
 
 /**
  * Options for creating a role menu item. Note that a label or click

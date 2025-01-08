@@ -1,14 +1,30 @@
 {
-  "name": "hoverboard-example",
-  "description": "Example application using Hoverboard.",
+  "name": "redial-example",
+  "description": "Example application using Redial.",
   "version": "1.0.0",
-  "main": "src/main.js",
+  "main": "dist/main/main.js",
   "scripts": {
-    "start": "electron ."
+    "build:renderer": "vite build --mode @renderer/production",
+    "start:renderer": "vite serve --mode @renderer/development",
+    "build:main:development": "vite build --mode @main/development",
+    "build:main:production": "vite build --mode @main/production",
+    "start:main": "electron .",
+    "build": "bun run build:main:production && bun run build:renderer",
+    "start:watch": "bun run build:main:development && concurrently --kill-others \"bun run start:main\" \"bun run start:renderer\"",
+    "start": "bun run build && bun run start:main"
   },
   "author": "Mike Rourke <mike.w.rourke@gmail.com>",
   "license": "MIT",
+  "dependencies": {
+    "@laserware/dominator": "^4.0.2"
+  },
   "devDependencies": {
-    "electron": "^31.3.1"
-  }
+    "concurrently": "^9.1.1",
+    "electron": "^33.2.1",
+    "vite": "^6.0.6"
+  },
+  "trustedDependencies": [
+    "electron",
+    "esbuild"
+  ]
 }

@@ -1,20 +1,32 @@
-import { ContextMenu } from "./hoverboard.mjs";
+import { asElement, createElement as html } from "@laserware/dominator";
+
+import { ContextMenu } from "../../src/renderer";
 
 let isChecked = false;
 let activeOption = "1";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const menuButton = document.getElementById("menu");
+start();
 
-  menuButton.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
+function start(): void {
+  const menuButton = html(
+    "button",
+    {
+      oncontextmenu(event) {
+        event.preventDefault();
 
-    createContextMenu(event);
-  });
-});
+        createContextMenu(event);
+      },
+    },
+    "Menu",
+  );
 
-function createContextMenu(event) {
-  const menu = ContextMenu.create("Test", (builder) => {
+  document.body.appendChild(menuButton);
+}
+
+function createContextMenu(event: MouseEvent) {
+  const ipcRenderer = window.require("electron").ipcRenderer;
+
+  const menu = ContextMenu.create("Test", ipcRenderer, (builder) => {
     builder
       .normal({
         id: "delete",
@@ -64,6 +76,7 @@ function createContextMenu(event) {
       before: ["delete"],
       label: "Add",
       click() {
+        console.log("YAY");
         window.alert("Added");
       },
     });
@@ -81,5 +94,7 @@ function createContextMenu(event) {
     console.log("Closed");
   });
 
-  menu.build().attach(event.currentTarget).show(event.clientX, event.clientY);
+  const element = asElement(event.currentTarget);
+
+  menu.build().attach(element).show(event.clientX, event.clientY);
 }

@@ -4,25 +4,25 @@ import type { MenuItemConstructorOptions } from "electron";
 import {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
-} from "./CheckboxMenuItem.ts";
+} from "./CheckboxMenuItem.js";
 import {
   NormalMenuItem,
   type NormalMenuItemOptions,
-} from "./NormalMenuItem.ts";
-import { RadioMenuItem, type RadioMenuItemOptions } from "./RadioMenuItem.ts";
-import { RoleMenuItem, type RoleMenuItemOptions } from "./RoleMenuItem.ts";
+} from "./NormalMenuItem.js";
+import { RadioMenuItem, type RadioMenuItemOptions } from "./RadioMenuItem.js";
+import { RoleMenuItem, type RoleMenuItemOptions } from "./RoleMenuItem.js";
 import {
   SeparatorMenuItem,
   type SeparatorMenuItemOptions,
-} from "./SeparatorMenuItem.ts";
+} from "./SeparatorMenuItem.js";
 import type {
   MenuItemOf,
   MenuItemPlacementOptions,
   MenuItemRole,
   MenuType,
   OnMenuItemClick,
-} from "./types.ts";
-import { getTemplateByProcess } from "./utilities.ts";
+} from "./types.js";
+import { getTemplateByProcess } from "./utilities.js";
 
 /**
  * Function called with the specified menu builder to add menu items to the
@@ -39,13 +39,13 @@ export type BuilderFunction<T extends MenuType> = (
  *
  * @public
  */
-// prettier-ignore
+// biome-ignore format:
 export interface SubmenuMenuItemOptions<T extends MenuType> extends MenuItemPlacementOptions {
   /** Optional ID. If omitted, a random UUID is used. */
   id?: string;
 
   /** Label to display in the menu item. */
-  label: string;
+  label?: string;
 
   /** Indicates if the menu item is enabled or disabled. */
   enabled?: boolean;
@@ -146,7 +146,6 @@ export class MenuBuilder<T extends MenuType> {
     options: SubmenuMenuItemOptions<T>,
     build: BuilderFunction<T>,
   ): this {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     this.#items.add(new SubmenuMenuItem<T>(options, build));
     return this;
   }

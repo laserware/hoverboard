@@ -6,8 +6,8 @@ import type {
   MenuItemPlacementOptions,
   MenuType,
   OnMenuItemClick,
-} from "./types.ts";
-import { getTemplateByProcess } from "./utilities.ts";
+} from "./types.js";
+import { getTemplateByProcess } from "./utilities.js";
 
 /**
  * Options for creating a checkbox menu item.

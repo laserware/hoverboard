@@ -1,9 +1,5 @@
-const { app, BrowserWindow } = require("electron");
-
-const {
-  configureContextMenus,
-  ApplicationMenu,
-} = require("../../dist/main.cjs");
+import { BrowserWindow, app } from "electron";
+import { ApplicationMenu, configureContextMenus } from "../../src/main";
 
 function createWindow() {
   // Create the browser window.
@@ -16,7 +12,15 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadFile("src/index.html");
+  const isDevelopment = /development/gi.test(import.meta.env.MODE);
+
+  if (isDevelopment) {
+    const port = Number(__DEV_SERVER_PORT__);
+
+    mainWindow.loadURL(`http://localhost:${port}/index.html`);
+  } else {
+    mainWindow.loadFile("dist/renderer/index.html");
+  }
 }
 
 app.whenReady().then(() => {
@@ -28,7 +32,7 @@ app.whenReady().then(() => {
 
   createWindow();
 
-  ApplicationMenu.create((builder) => {
+  const menu = ApplicationMenu.create((builder) => {
     builder
       .role({ role: "appMenu" })
       .role({ role: "fileMenu" })
@@ -50,13 +54,17 @@ app.whenReady().then(() => {
     .build()
     .set();
 
-  app.on("activate", function () {
+  menu.addListener("click", (...args) => {
+    console.log(args);
+  });
+
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
   });
 });
 
-app.on("window-all-closed", function () {
+app.on("window-all-closed", () => {
   app.quit();
 });

@@ -1,6 +1,6 @@
 import type { MenuItemConstructorOptions } from "electron";
 
-import type { MenuType, OnMenuItemClick } from "./types.ts";
+import type { MenuType, OnMenuItemClick } from "./types.js";
 
 /** Returns true if in the main process. */
 export function isMainProcess(): boolean {

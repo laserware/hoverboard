@@ -1,7 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { uuid } from "@laserware/arcade";
-import { TypedEventTarget } from "@laserware/dominator";
+import { TypedEventTarget, uuid } from "@laserware/arcade";
 import type {
   IpcRendererEvent,
   KeyboardEvent,
@@ -11,38 +10,38 @@ import type {
 import {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
-} from "../common/CheckboxMenuItem.ts";
+} from "../common/CheckboxMenuItem.js";
 import {
   NormalMenuItem,
   type NormalMenuItemOptions,
-} from "../common/NormalMenuItem.ts";
+} from "../common/NormalMenuItem.js";
 import {
   RadioMenuItem,
   type RadioMenuItemOptions,
-} from "../common/RadioMenuItem.ts";
+} from "../common/RadioMenuItem.js";
 import {
   RoleMenuItem,
   type RoleMenuItemOptions,
-} from "../common/RoleMenuItem.ts";
+} from "../common/RoleMenuItem.js";
 import {
   SeparatorMenuItem,
   type SeparatorMenuItemOptions,
-} from "../common/SeparatorMenuItem.ts";
+} from "../common/SeparatorMenuItem.js";
 import {
+  type BuilderFunction,
   MenuBuilder,
   SubmenuMenuItem,
-  type BuilderFunction,
   type SubmenuMenuItemOptions,
-} from "../common/SubmenuMenuItem.ts";
+} from "../common/SubmenuMenuItem.js";
 import {
-  IpcChannel,
   type ContextMenuItem,
   type ContextMenuItemClickedData,
   type ContextMenuShownData,
+  IpcChannel,
   type OnContextMenuItemClick,
-} from "../common/types.ts";
+} from "../common/types.js";
 
-import { getDefaultIpcApi, type IpcApi } from "./ipcApi.ts";
+import { type IpcApi, getDefaultIpcApi } from "./ipcApi.js";
 
 type ContextMenuEventMap = {
   /**
@@ -96,25 +95,8 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
     name: string,
     ipcApi: IpcApi,
     builder: BuilderFunction<"context">,
-  ): ContextMenu;
-
-  /**
-   * Returns a new context menu with the specified name and builder function.
-   *
-   * @param name Name of the context menu.
-   * @param builder Builder function used to add items to the context menu.
-   */
-  public static create(
-    name: string,
-    builder: BuilderFunction<"context">,
-  ): ContextMenu;
-
-  public static create(
-    name: string,
-    builderOrIpcApi: BuilderFunction<"context"> | IpcApi,
-    builder?: BuilderFunction<"context">,
   ): ContextMenu {
-    return new ContextMenu(name, builderOrIpcApi, builder);
+    return new ContextMenu(name, ipcApi, builder);
   }
 
   /**
@@ -147,7 +129,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
       this.#ipcApi = builderOrIpcApi;
 
       if (builder === undefined) {
-        // prettier-ignore
+        // biome-ignore format:
         throw new Error("A builder function is required to create a context menu");
       } else {
         this.#builder = builder(new MenuBuilder());
@@ -155,7 +137,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
     }
 
     if (this.#builder === undefined) {
-      // prettier-ignore
+      // biome-ignore format:
       throw new Error("Menu could not be created. This may be caused by not returning the builder from the ContextMenu.create callback");
     }
   }
@@ -307,7 +289,7 @@ export class ContextMenu extends TypedEventTarget<ContextMenuEventMap> {
    *                  (if needed). For example, we may want to open a link in the users browser,
    *                  rather than in another Electron window, or provide the ability to copy the URL.
    */
-  public show(x: number, y: number, linkURL: string = ""): this {
+  public show(x: number, y: number, linkURL = ""): this {
     if (this.#ipcApi === null) {
       this.#ipcApi = getDefaultIpcApi();
     }

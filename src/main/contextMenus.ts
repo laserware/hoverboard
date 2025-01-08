@@ -1,26 +1,26 @@
 import {
-  app,
-  BaseWindow,
+  type BaseWindow,
   BrowserWindow,
-  clipboard,
-  ipcMain,
-  Menu,
-  nativeImage,
-  shell,
   type ContextMenuParams,
   type Event as ElectronEvent,
   type IpcMainEvent,
   type KeyboardEvent,
+  Menu,
   type MenuItem,
   type MenuItemConstructorOptions,
   type Point,
+  app,
+  clipboard,
+  ipcMain,
+  nativeImage,
+  shell,
 } from "electron";
 
 import {
-  IpcChannel,
   type ContextMenuItemClickedData,
   type ContextMenuShownData,
-} from "../common/types.ts";
+  IpcChannel,
+} from "../common/types.js";
 
 interface CustomMenuBuilderOptions {
   /**
@@ -157,7 +157,7 @@ function enableCustomContextMenuBuilder(
       }
 
       if (options?.appendInspectElementToMenus) {
-        // prettier-ignore
+        // biome-ignore format:
         template = appendInspectElementMenuItem(template, browserWindow, position);
       }
 

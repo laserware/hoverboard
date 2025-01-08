@@ -41,9 +41,7 @@ export type OnContextMenuItemClick = (
 
 export type OnMenuItemClick<T extends MenuType> = T extends "context"
   ? OnContextMenuItemClick
-  : T extends "main"
-    ? OnApplicationMenuItemClick
-    : never;
+  : OnApplicationMenuItemClick;
 
 /**
  * Options for placing the menu item in a specific location relative to other
