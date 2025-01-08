@@ -1,6 +1,6 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`the ContextMenu class > builds a context menu with a template that matches its snapshot 1`] = `
+exports[`the ContextMenu class builds a context menu with a template that matches its snapshot 1`] = `
 [
   {
     "id": "random-id-2",
