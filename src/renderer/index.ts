@@ -1,28 +1,28 @@
 export {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
-} from "../common/CheckboxMenuItem.ts";
-export { ContextMenu } from "./ContextMenu.ts";
+} from "../common/CheckboxMenuItem.js";
+export { ContextMenu } from "./ContextMenu.js";
 export {
   NormalMenuItem,
   type NormalMenuItemOptions,
-} from "../common/NormalMenuItem.ts";
+} from "../common/NormalMenuItem.js";
 export {
   RadioMenuItem,
   type RadioMenuItemOptions,
-} from "../common/RadioMenuItem.ts";
+} from "../common/RadioMenuItem.js";
 export {
   RoleMenuItem,
   type RoleMenuItemOptions,
-} from "../common/RoleMenuItem.ts";
+} from "../common/RoleMenuItem.js";
 export {
   SeparatorMenuItem,
   type SeparatorMenuItemOptions,
-} from "../common/SeparatorMenuItem.ts";
+} from "../common/SeparatorMenuItem.js";
 export {
   SubmenuMenuItem,
   type BuilderFunction,
   type MenuBuilder,
   type SubmenuMenuItemOptions,
-} from "../common/SubmenuMenuItem.ts";
-export type { ContextMenuItem } from "../common/types.ts";
+} from "../common/SubmenuMenuItem.js";
+export type { ContextMenuItem } from "../common/types.js";

@@ -1,19 +1,25 @@
-import { ContextMenu } from "../ContextMenu.ts";
-import { getDefaultIpcApi } from "../ipcApi.ts";
+import { describe, expect, it, mock } from "bun:test";
+
+import { getAttribute } from "@laserware/dominator";
+import { ContextMenu } from "../ContextMenu.js";
 
 // Mocking `uuid` here so we can get reproducible snapshots.
-vi.mock("@laserware/arcade", () => {
+mock.module("@laserware/arcade", () => {
   let counter = 1;
   return {
     uuid: () => `random-id-${counter++}`,
   };
 });
 
-vi.mock("../ipcApi.ts");
-
 describe("the ContextMenu class", () => {
   it("builds a context menu with a template that matches its snapshot", () => {
-    const cm = ContextMenu.create("Test", (builder) =>
+    const ipcApi = {
+      addListener: mock(),
+      removeListener: mock(),
+      send: mock(),
+    };
+
+    const cm = ContextMenu.create("Test", ipcApi, (builder) =>
       builder
         .normal({ label: "Normal 1" })
         .normal({ label: "Normal 2" })
@@ -37,32 +43,36 @@ describe("the ContextMenu class", () => {
   it("adds a dataset property to the attached element and removes it when disposed", () => {
     const element = document.createElement("div");
 
-    const cm = ContextMenu.create("Test", (builder) =>
+    const ipcApi = {
+      addListener: mock(),
+      removeListener: mock(),
+      send: mock(),
+    };
+
+    const cm = ContextMenu.create("Test", ipcApi, (builder) =>
       builder.normal({ label: "Normal 1" }).normal({ label: "Normal 2" }),
     )
       .build()
       .attach(element);
-    expect(element).toHaveAttribute("data-context-menu-name", "Test");
+    expect(getAttribute(element, "data-context-menu-name")).toBe("Test");
 
     cm.dispose();
-    expect(element).not.toHaveAttribute("data-context-menu-name", "Test");
+    expect(getAttribute(element, "data-context-menu-name")).toBeNull();
   });
 
   it("uses the custom IPC API when specified", () => {
-    const addListener = vi.fn();
-    const send = vi.fn();
+    const addListener = mock();
+    const send = mock();
 
     const ipcApi = {
       addListener,
-      removeListener: vi.fn(),
+      removeListener: mock(),
       send,
     };
 
-    vi.mocked(getDefaultIpcApi).mockReturnValue(ipcApi);
-
     const element = document.createElement("div");
 
-    const cm = ContextMenu.create("Test", (builder) =>
+    const cm = ContextMenu.create("Test", ipcApi, (builder) =>
       builder.normal({ label: "Normal 1" }).normal({ label: "Normal 2" }),
     )
       .build()
@@ -97,9 +107,9 @@ describe("the ContextMenu class", () => {
 
   it("throws an error if a builder function is missing from the constructor", () => {
     const ipcApi = {
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      send: vi.fn(),
+      addListener: mock(),
+      removeListener: mock(),
+      send: mock(),
     };
 
     expect(() => {
@@ -109,7 +119,13 @@ describe("the ContextMenu class", () => {
   });
 
   it("throws an error if a duplicate ID is specified", () => {
-    const cm = ContextMenu.create("Test", (builder) =>
+    const ipcApi = {
+      addListener: mock(),
+      removeListener: mock(),
+      send: mock(),
+    };
+
+    const cm = ContextMenu.create("Test", ipcApi, (builder) =>
       builder
         .normal({ id: "1", label: "Normal 1" })
         .normal({ id: "1", label: "Normal 2" })

@@ -5,7 +5,7 @@ import type {
   MenuItemPlacementOptions,
   MenuType,
   OnMenuItemClick,
-} from "./types.ts";
+} from "./types.js";
 
 export type SeparatorMenuItemOptions = MenuItemPlacementOptions;
 

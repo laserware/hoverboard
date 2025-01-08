@@ -1,39 +1,51 @@
-import { Menu, type MenuItemConstructorOptions } from "electron";
+import { EventEmitter } from "node:events";
+
+import {
+  type BrowserWindow,
+  type KeyboardEvent,
+  Menu,
+  type MenuItem,
+  type MenuItemConstructorOptions,
+} from "electron";
 
 import {
   CheckboxMenuItem,
   type CheckboxMenuItemOptions,
-} from "../common/CheckboxMenuItem.ts";
+} from "../common/CheckboxMenuItem.js";
 import {
   NormalMenuItem,
   type NormalMenuItemOptions,
-} from "../common/NormalMenuItem.ts";
+} from "../common/NormalMenuItem.js";
 import {
   RadioMenuItem,
   type RadioMenuItemOptions,
-} from "../common/RadioMenuItem.ts";
+} from "../common/RadioMenuItem.js";
 import {
   RoleMenuItem,
   type RoleMenuItemOptions,
-} from "../common/RoleMenuItem.ts";
+} from "../common/RoleMenuItem.js";
 import {
   SeparatorMenuItem,
   type SeparatorMenuItemOptions,
-} from "../common/SeparatorMenuItem.ts";
+} from "../common/SeparatorMenuItem.js";
 import {
+  type BuilderFunction,
   MenuBuilder,
   SubmenuMenuItem,
-  type BuilderFunction,
   type SubmenuMenuItemOptions,
-} from "../common/SubmenuMenuItem.ts";
-import type { ApplicationMenuItem } from "../common/types.ts";
+} from "../common/SubmenuMenuItem.js";
+import type { ApplicationMenuItem } from "../common/types.js";
+
+interface ApplicationMenuEventMap {
+  click: [MenuItem, BrowserWindow | undefined, KeyboardEvent];
+}
 
 /**
  * Provides the means to create a custom application menu.
  *
  * @public
  */
-export class ApplicationMenu {
+export class ApplicationMenu extends EventEmitter<ApplicationMenuEventMap> {
   readonly #builder: MenuBuilder<"application">;
 
   #menu: Menu | null = null;
@@ -51,10 +63,12 @@ export class ApplicationMenu {
   }
 
   constructor(builder: BuilderFunction<"application">) {
+    super();
+
     this.#builder = builder(new MenuBuilder());
 
     if (this.#builder === undefined) {
-      // prettier-ignore
+      // biome-ignore format:
       throw new Error("Menu could not be created. This may be caused by not returning the builder from the MainMenu.create callback");
     }
   }
@@ -167,7 +181,7 @@ export class ApplicationMenu {
 
   public set(): this {
     if (this.#menu === null) {
-      // prettier-ignore
+      // biome-ignore format:
       throw new Error("You must call build on the ApplicationMenu before setting")
     }
 

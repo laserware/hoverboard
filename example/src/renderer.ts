@@ -1,21 +1,32 @@
+import { asElement, createElement as html } from "@laserware/dominator";
+
 import { ContextMenu } from "../../src/renderer";
-import { asElement } from "@laserware/dominator";
 
 let isChecked = false;
 let activeOption = "1";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const menuButton = document.getElementById("menu");
+start();
 
-  menuButton.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
+function start(): void {
+  const menuButton = html(
+    "button",
+    {
+      oncontextmenu(event) {
+        event.preventDefault();
 
-    createContextMenu(event);
-  });
-});
+        createContextMenu(event);
+      },
+    },
+    "Menu",
+  );
+
+  document.body.appendChild(menuButton);
+}
 
 function createContextMenu(event: MouseEvent) {
-  const menu = ContextMenu.create("Test", (builder) => {
+  const ipcRenderer = window.require("electron").ipcRenderer;
+
+  const menu = ContextMenu.create("Test", ipcRenderer, (builder) => {
     builder
       .normal({
         id: "delete",
@@ -65,6 +76,7 @@ function createContextMenu(event: MouseEvent) {
       before: ["delete"],
       label: "Add",
       click() {
+        console.log("YAY");
         window.alert("Added");
       },
     });
