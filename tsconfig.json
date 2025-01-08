@@ -1,34 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationMap": false,
-    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "lib": ["DOM", "ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
     "outDir": "./dist",
     "removeComments": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "strict": true,
     "target": "ESNext",
-    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
     "verbatimModuleSyntax": true
   },
-  "include": [
-    "./src/**/*.ts",
-    "./main.d.ts",
-    "./renderer.d.ts",
-    "./tsup.config.ts",
-    "./vitest.config.mts",
-    "./vitest.setup.mts"
-  ],
+  "include": ["src", "./main.d.ts", "./renderer.d.ts", "./tsup.config.ts"],
   "exclude": ["./dist", "node_modules"]
 }

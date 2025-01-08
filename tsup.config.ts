@@ -2,7 +2,6 @@ import { builtinModules } from "node:module";
 
 import { defineConfig } from "tsup";
 
-// @ts-ignore
 export default defineConfig(() => {
   const commonOptions = {
     bundle: true,
@@ -20,38 +19,9 @@ export default defineConfig(() => {
   return [
     {
       ...commonOptions,
-      name: "Renderer (MJS)",
-      dts: true,
-      entry: { renderer: "src/renderer/index.ts" },
-      format: "esm",
-      outExtension: () => ({ js: ".mjs" }),
-      platform: "browser",
-      target: "esnext",
-      treeshake: true,
-    },
-    // This config is only for the `/example` project. It doesn't get shipped
-    // with the application:
-    {
-      ...commonOptions,
-      name: "Renderer (Example)",
-      clean: false,
-      dts: false,
-      entry: { hoverboard: "src/renderer/index.ts" },
-      format: "esm",
-      minify: false,
-      noExternal: [/laserware/],
-      outDir: "./example/src",
-      outExtension: () => ({ js: ".mjs" }),
-      platform: "browser",
-      sourcemap: false,
-      target: "esnext",
-      treeshake: false,
-    },
-    {
-      ...commonOptions,
       name: "Main (ESM)",
       dts: true,
-      entry: { main: "src/main/index.ts" },
+      entry: { main: "src/main/index.ts" } as any,
       format: "esm",
       outExtension: () => ({ js: ".mjs" }),
       platform: "node",
@@ -62,10 +32,21 @@ export default defineConfig(() => {
       ...commonOptions,
       name: "Main (CJS)",
       dts: false,
-      entry: { main: "src/main/index.ts" },
+      entry: { main: "src/main/index.ts" } as any,
       format: "cjs",
       outExtension: () => ({ js: ".cjs" }),
       platform: "node",
+    },
+    {
+      ...commonOptions,
+      name: "Renderer (ESM)",
+      dts: true,
+      entry: { renderer: "src/renderer/index.ts" },
+      format: "esm",
+      outExtension: () => ({ js: ".mjs" }),
+      platform: "browser",
+      target: "esnext",
+      treeshake: true,
     },
   ];
 });

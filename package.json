@@ -2,13 +2,13 @@
   "name": "@laserware/hoverboard",
   "version": "0.0.4",
   "description": "Better menus for Electron.",
-  "type": "module",
+  "author": "Mike Rourke <mike.w.rourke@gmail.com> (https://mikerourke.dev/)",
+  "license": "MIT",
   "repository": {
     "url": "git+https://github.com/laserware/hoverboard.git",
     "type": "git"
   },
-  "author": "Mike Rourke <mike.w.rourke@gmail.com>",
-  "license": "MIT",
+  "type": "module",
   "exports": {
     "./main": {
       "types": "./dist/main.d.ts",
@@ -31,37 +31,35 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "scripts": {
-    "build": "tsup --no-splitting && cd dist && npx prettier --write .",
-    "prepublishOnly": "npm run build",
-    "preversion": "npm run eslint && npm run typecheck",
-    "version": "npm run prettier && git add -A src",
+    "build": "tsup --no-splitting",
+    "prepublishOnly": "bun run build",
+    "preversion": "bun run lint && bun run typecheck",
+    "version": "bun run format && git add -A src",
     "postversion": "git push && git push --tags",
+    "ci": "biome ci src",
+    "format": "biome check --formatter-enabled=true --linter-enabled=false --organize-imports-enabled=true --write src",
+    "lint": "biome lint src",
+    "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "prettier": "prettier --cache --write src",
-    "prettier:ci": "prettier --check src",
-    "eslint": "eslint --cache src",
-    "vitest": "vitest",
-    "example": "npm run build && cd example && npm run start"
+    "example": "cd example && bun run start"
   },
   "dependencies": {
-    "@laserware/arcade": "^3.9.0",
-    "@laserware/dominator": "^2.12.1"
+    "@laserware/arcade": "^3.13.3",
+    "@laserware/dominator": "^4.0.2"
   },
   "devDependencies": {
-    "@laserware/eslint-config": "^5.2.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@biomejs/biome": "1.9.4",
+    "@types/bun": "latest",
     "@types/node": "^22",
     "electron": "^33.2.1",
-    "eslint": "^9.16.0",
     "jsdom": "^25.0.1",
-    "prettier": "^3.4.1",
-    "tslib": "^2.8.1",
     "tsup": "^8.3.5",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.6"
+    "typescript": "^5.7.2"
   },
-  "prettier": {
-    "trailingComma": "all"
-  }
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "esbuild"
+  ]
 }
