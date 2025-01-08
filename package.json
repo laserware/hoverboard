@@ -22,7 +22,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "main.d.ts",
+    "renderer.d.ts"
   ],
   "keywords": [
     "electron",
