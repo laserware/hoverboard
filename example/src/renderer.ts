@@ -1,4 +1,5 @@
-import { ContextMenu } from "./hoverboard.mjs";
+import { ContextMenu } from "../../src/renderer";
+import { asElement } from "@laserware/dominator";
 
 let isChecked = false;
 let activeOption = "1";
@@ -13,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-function createContextMenu(event) {
+function createContextMenu(event: MouseEvent) {
   const menu = ContextMenu.create("Test", (builder) => {
     builder
       .normal({
@@ -81,5 +82,7 @@ function createContextMenu(event) {
     console.log("Closed");
   });
 
-  menu.build().attach(event.currentTarget).show(event.clientX, event.clientY);
+  const element = asElement(event.currentTarget);
+
+  menu.build().attach(element).show(event.clientX, event.clientY);
 }
