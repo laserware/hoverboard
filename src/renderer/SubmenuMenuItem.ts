@@ -39,7 +39,11 @@ export class SubmenuMenuItem extends ContextMenuItem {
   ) {
     super(options, "submenu");
 
+    this.enabled = options.enabled;
+    this.icon = options.icon;
     this.items = Array.isArray(init) ? init : init(new MenuBuilder()).items;
+    this.label = options.label;
+    this.toolTip = options.toolTip;
   }
 
   public enabled: boolean | undefined;
@@ -56,6 +60,22 @@ export class SubmenuMenuItem extends ContextMenuItem {
 
   public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();
+
+    if (this.enabled !== undefined) {
+      template.enabled = this.enabled;
+    }
+
+    if (this.icon !== undefined) {
+      template.icon = this.icon;
+    }
+
+    if (this.label !== undefined) {
+      template.label = this.label;
+    }
+
+    if (this.toolTip !== undefined) {
+      template.toolTip = this.toolTip;
+    }
 
     const submenu: MenuItemConstructorOptions[] = [];
 

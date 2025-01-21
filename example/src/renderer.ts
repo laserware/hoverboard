@@ -22,7 +22,8 @@ let activeOption = "1";
 start();
 
 function start(): void {
-  createElementsContextMenu();
+  // createElementsContextMenu();
+  createImperativeContextMenu();
 }
 
 function createImperativeContextMenu(): void {
@@ -61,7 +62,7 @@ function createImperativeContextMenu(): void {
       ),
     ),
     items.separator(),
-    items.shareMenu({ urls: ["https://google.com"] }),
+    // items.shareMenu({ urls: ["https://google.com"] }),
     items.role({
       role: "cut",
       accelerator: "CommandOrControl+X",
