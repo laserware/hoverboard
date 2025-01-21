@@ -7,7 +7,10 @@ import {
   type ContextMenuEventListenerOrEventListenerObject,
   type ContextMenuEventType,
 } from "./ContextMenuEvent.js";
-import type { ContextMenuItem } from "./ContextMenuItem.js";
+import type {
+  ContextMenuItem,
+  OnContextMenuItemClick,
+} from "./ContextMenuItem.js";
 import { MenuBuilder, type MenuBuilderFunction } from "./MenuBuilder.js";
 import { NormalMenuItem } from "./NormalMenuItem.js";
 import { SubmenuMenuItem } from "./SubmenuMenuItem.js";
@@ -294,23 +297,31 @@ export class ContextMenu extends EventTarget {
       return null;
     }
 
-    if (menuItem instanceof NormalMenuItem && menuItem.click !== undefined) {
-      const event = new ContextMenuEvent("click", {
-        ...response.event,
-        clientX: x,
-        clientY: y,
-        menuItem,
-      } satisfies ContextMenuEventInit);
+    const event = new ContextMenuEvent("click", {
+      ...response.event,
+      clientX: x,
+      clientY: y,
+      menuItem,
+    } satisfies ContextMenuEventInit);
 
+    this.dispatchEvent(event);
+
+    if (isClickable(menuItem)) {
       menuItem.click(menuItem, event);
-
-      this.dispatchEvent(event);
     }
 
     dispatchHideEvent(menuItem, response.event.triggeredByAccelerator);
 
     return menuItem;
   }
+}
+
+interface Clickable {
+  click: OnContextMenuItemClick;
+}
+
+function isClickable(value: any): value is Clickable {
+  return "click" in value && value.click !== undefined;
 }
 
 function* walkContextMenu(

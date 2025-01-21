@@ -10,6 +10,7 @@ import {
   registerElements,
 } from "../../src/elements";
 import {
+  type ContextMenu,
   RadioMenuItem,
   type ContextMenuEvent as RendererContextMenuEvent,
   contextMenu,
@@ -22,8 +23,79 @@ let activeOption = "1";
 start();
 
 function start(): void {
+  createEditorMenu();
   // createElementsContextMenu();
-  createImperativeContextMenu();
+  // createImperativeContextMenu();
+
+  const editorMenu = createEditorMenu();
+
+  editorMenu.addEventListener("click", (event) => {
+    console.log(event.menuItem);
+  });
+
+  window.addEventListener("contextmenu", async (event) => {
+    await editorMenu.show(event.clientX, event.clientY);
+  });
+
+  const menuButton = html(
+    "button",
+    html("a", { href: "https://google.com" }, "MENU"),
+  );
+
+  document.body.appendChild(menuButton);
+}
+
+function createEditorMenu(): ContextMenu {
+  return contextMenu((builder) =>
+    builder
+      .normal({
+        id: "close-editor",
+        label: "Close",
+        accelerator: "CommandOrControl+W",
+      })
+      .normal({
+        id: "close-others",
+        label: "Close Others",
+        accelerator: "CommandOrControl+Alt+T",
+      })
+      .normal({
+        id: "close-to-right",
+        label: "Close to the Right",
+      })
+      .normal({
+        id: "close-saved",
+        label: "Close Saved",
+      })
+      .normal({
+        id: "close-all",
+        label: "Close All",
+      })
+      .separator()
+      .normal({
+        id: "copy-path",
+        label: "Copy Path",
+        accelerator: "CommandOrControl+Shift+C",
+      })
+      .normal({
+        id: "copy-relative-path",
+        label: "Copy Relative Path",
+        accelerator: "CommandOrControl+Alt+Shift+C",
+      })
+      .separator()
+      .normal({ id: "reopen-editor-with", label: "Reopen Editor With..." })
+      .separator()
+      .normal({ id: "pin-tab", label: "Pin" })
+      .separator()
+      .normal({ id: "split-up", label: "Split Up" })
+      .normal({ id: "split-down", label: "Split Down" })
+      .normal({ id: "split-left", label: "Split Left" })
+      .normal({ id: "split-right", label: "Split Right" })
+      .separator()
+      .normal({ id: "split-in-group", label: "Split in Group" })
+      .separator()
+      .normal({ id: "move-into-new-window", label: "Move into New Window" })
+      .normal({ id: "copy-into-new-window", label: "Copy into New Window" }),
+  );
 }
 
 function createImperativeContextMenu(): void {
