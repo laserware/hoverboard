@@ -44,7 +44,6 @@ exports[`the ContextMenu class builds a context menu with a template that matche
   },
   {
     "id": "menu-item-9",
-    "label": "Submenu",
     "submenu": [
       {
         "checked": true,
