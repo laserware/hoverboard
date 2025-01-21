@@ -19,6 +19,10 @@
       "types": "./dist/renderer.d.ts",
       "import": "./dist/renderer.mjs",
       "require": "./dist/renderer.cjs"
+    },
+    "./preload": {
+      "import": "./dist/preload.mjs",
+      "require": "./dist/preload.cjs"
     }
   },
   "files": [
@@ -35,7 +39,7 @@
   },
   "sideEffects": true,
   "scripts": {
-    "build": "tsup --no-splitting",
+    "build": "tsup",
     "prepublishOnly": "bun run build",
     "preversion": "bun run check && bun run typecheck",
     "version": "git add -A src",

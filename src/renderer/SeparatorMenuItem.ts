@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from "electron";
+
 import {
   ContextMenuItem,
   type ContextMenuItemOptions,
@@ -16,7 +18,7 @@ export class SeparatorMenuItem extends ContextMenuItem {
     super(options, "separator");
   }
 
-  public toTemplate(): Electron.MenuItemConstructorOptions {
+  public toTemplate(): MenuItemConstructorOptions {
     return super.toTemplate();
   }
 }

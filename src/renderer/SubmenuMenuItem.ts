@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from "electron";
+
 import {
   ContextMenuItem,
   type ContextMenuItemOptions,
@@ -52,10 +54,10 @@ export class SubmenuMenuItem extends ContextMenuItem {
     }
   }
 
-  public toTemplate(): Electron.MenuItemConstructorOptions {
+  public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();
 
-    const submenu: Electron.MenuItemConstructorOptions[] = [];
+    const submenu: MenuItemConstructorOptions[] = [];
 
     for (const item of this.items) {
       item.parent = this;

@@ -1,6 +1,6 @@
 import { builtinModules } from "node:module";
 
-import { defineConfig } from "tsup";
+import { type Options, defineConfig } from "tsup";
 
 export default defineConfig(() => {
   const commonOptions = {
@@ -16,37 +16,52 @@ export default defineConfig(() => {
     tsconfig: "./tsconfig.build.json",
   };
 
-  return [
-    {
+  const esm = (
+    name: string,
+    options: Omit<Options, "entry"> & { entry: Record<string, any> },
+  ): Options => {
+    return {
       ...commonOptions,
-      name: "Main (ESM)",
+      name: `${name} (ESM)`,
       dts: true,
-      entry: { main: "src/main/index.ts" } as any,
       format: "esm",
       outExtension: () => ({ js: ".mjs" }),
-      platform: "node",
       target: "esnext",
       treeshake: true,
-    },
-    {
+      ...options,
+    };
+  };
+
+  const cjs = (
+    name: string,
+    options: Omit<Options, "entry"> & { entry: Record<string, any> },
+  ): Options => {
+    return {
       ...commonOptions,
-      name: "Main (CJS)",
+      name: `${name} (CJS)`,
       dts: false,
-      entry: { main: "src/main/index.ts" } as any,
       format: "cjs",
       outExtension: () => ({ js: ".cjs" }),
       platform: "node",
-    },
-    {
-      ...commonOptions,
-      name: "Renderer (ESM)",
-      dts: true,
+      ...options,
+    };
+  };
+
+  return [
+    esm("main", { entry: { main: "src/main/index.ts" }, platform: "node" }),
+    cjs("main", { entry: { main: "src/main/index.ts" } }),
+    esm("preload", {
+      dts: false,
+      entry: { preload: "src/sandbox/preload.ts" },
+      platform: "node",
+    }),
+    cjs("preload", {
+      dts: false,
+      entry: { preload: "src/sandbox/preload.ts" },
+    }),
+    esm("renderer", {
       entry: { renderer: "src/renderer/index.ts" },
-      format: "esm",
-      outExtension: () => ({ js: ".mjs" }),
       platform: "browser",
-      target: "esnext",
-      treeshake: true,
-    },
+    }),
   ];
 });

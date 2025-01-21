@@ -1,6 +1,12 @@
 import {
   BrowserWindow,
+  type ContextMenuParams,
+  type Event,
+  type IpcMainInvokeEvent,
   Menu,
+  type MenuItemConstructorOptions,
+  type NativeImage,
+  type PopupOptions,
   app,
   clipboard,
   ipcMain,
@@ -36,7 +42,7 @@ export type ContextMenuOptions = {
    * operations  and the ability to inspect elements. Alternatively, specify a
    * template to show.
    */
-  fallback?: boolean | Electron.MenuItemConstructorOptions[];
+  fallback?: boolean | MenuItemConstructorOptions[];
 };
 
 /**
@@ -57,7 +63,7 @@ export function configureContextMenus(options: ContextMenuOptions): void {
   };
 
   const handleShowContextMenu = (
-    event: Electron.IpcMainInvokeEvent,
+    event: IpcMainInvokeEvent,
     request: ShowContextMenuRequest,
   ) => {
     const browserWindow = BrowserWindow.fromWebContents(event.sender);
@@ -149,10 +155,7 @@ export function configureContextMenus(options: ContextMenuOptions): void {
     });
   };
 
-  const handleHideContextMenu = (
-    event: Electron.IpcMainInvokeEvent,
-    menuId: string,
-  ) => {
+  const handleHideContextMenu = (event: IpcMainInvokeEvent, menuId: string) => {
     const browserWindow = BrowserWindow.fromWebContents(event.sender);
     if (browserWindow === null) {
       return;
@@ -164,7 +167,7 @@ export function configureContextMenus(options: ContextMenuOptions): void {
   ipcMain.handle(IpcChannel.ForShowContextMenu, handleShowContextMenu);
   ipcMain.handle(IpcChannel.ForHideContextMenu, handleHideContextMenu);
 
-  app.addListener("before-quit", (event: Electron.Event) => {
+  app.addListener("before-quit", (event: Event) => {
     if (event.defaultPrevented) {
       return;
     }
@@ -183,16 +186,16 @@ function setFallbackMenu(options: ContextMenuOptions): void {
   const controller = new AbortController();
 
   const handleBrowserWindowCreated = (
-    event: Electron.Event,
+    event: Event,
     browserWindow: BrowserWindow,
   ): void => {
     const webContents = browserWindow.webContents;
 
     const handleWebContentsContextMenu = (
-      event: Electron.Event,
-      params: Electron.ContextMenuParams,
+      event: Event,
+      params: ContextMenuParams,
     ) => {
-      const template: Electron.MenuItemConstructorOptions[] = [];
+      const template: MenuItemConstructorOptions[] = [];
 
       if (Array.isArray(options.fallback)) {
         template.push(...options.fallback);
@@ -236,7 +239,7 @@ function setFallbackMenu(options: ContextMenuOptions): void {
     app.removeListener("browser-window-created", handleBrowserWindowCreated);
   });
 
-  app.addListener("before-quit", (event: Electron.Event) => {
+  app.addListener("before-quit", (event: Event) => {
     if (event.defaultPrevented) {
       return;
     }
@@ -250,12 +253,12 @@ class ContextMenu {
 
   public id = "";
 
-  constructor(id: string, template: Electron.MenuItemConstructorOptions[]) {
+  constructor(id: string, template: MenuItemConstructorOptions[]) {
     this.id = id;
     this.#menu = Menu.buildFromTemplate(template);
   }
 
-  public popup(options?: Electron.PopupOptions): void {
+  public popup(options?: PopupOptions): void {
     this.#menu.popup(options);
   }
 
@@ -265,8 +268,8 @@ class ContextMenu {
 }
 
 function getIconForMenuItem(
-  menuItem: Electron.MenuItemConstructorOptions,
-): Electron.NativeImage | undefined {
+  menuItem: MenuItemConstructorOptions,
+): NativeImage | undefined {
   if (typeof menuItem.icon !== "string") {
     return undefined;
   }
@@ -286,11 +289,11 @@ function getIconForMenuItem(
 }
 
 function* walkMenuTemplate(
-  template: Electron.MenuItemConstructorOptions[],
-): Generator<Electron.MenuItemConstructorOptions, void, void> {
+  template: MenuItemConstructorOptions[],
+): Generator<MenuItemConstructorOptions, void, void> {
   function* recurse(
-    items: Electron.MenuItemConstructorOptions[],
-  ): Generator<Electron.MenuItemConstructorOptions, void, void> {
+    items: MenuItemConstructorOptions[],
+  ): Generator<MenuItemConstructorOptions, void, void> {
     for (const item of items) {
       yield item;
 

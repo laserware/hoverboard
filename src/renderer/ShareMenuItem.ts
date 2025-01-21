@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions, SharingItem } from "electron";
+
 import {
   ContextMenuItem,
   type ContextMenuItemOptions,
@@ -42,12 +44,12 @@ export class ShareMenuItem extends ContextMenuItem {
     this.urls = options.urls;
   }
 
-  public toTemplate(): Electron.MenuItemConstructorOptions {
+  public toTemplate(): MenuItemConstructorOptions {
     this.validate();
 
     const template = super.toTemplate();
 
-    const sharingItem: Electron.SharingItem = {};
+    const sharingItem: SharingItem = {};
 
     if (this.filePaths !== undefined) {
       sharingItem.filePaths = this.filePaths;

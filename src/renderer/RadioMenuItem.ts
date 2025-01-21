@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from "electron";
+
 import {
   NormalMenuItem,
   type NormalMenuItemOptions,
@@ -32,7 +34,7 @@ export class RadioMenuItem extends NormalMenuItem<RadioMenuItemOptions> {
     }
   }
 
-  public toTemplate(): Electron.MenuItemConstructorOptions {
+  public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();
 
     if (this.checked !== undefined) {

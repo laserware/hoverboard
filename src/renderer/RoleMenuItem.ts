@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from "electron";
+
 import {
   ContextMenuItem,
   type ContextMenuItemOptions,
@@ -57,7 +59,7 @@ export class RoleMenuItem extends ContextMenuItem {
     }
   }
 
-  public toTemplate(): Electron.MenuItemConstructorOptions {
+  public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();
 
     template.role = this.role;

@@ -1,0 +1,28 @@
+name: Release
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      - name: Publish to npm
+        uses: laserware/propellant@v1.0.2
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

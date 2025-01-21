@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from "electron";
+
 import { getHoverboardGlobals } from "../sandbox/globals.js";
 import {
   ContextMenuEvent,
@@ -123,8 +125,8 @@ export class ContextMenu extends EventTarget {
    * Converts the contents of the context menu item to a serializable template
    * that is sent to the main process to build the context menu.
    */
-  public toTemplate(): Electron.MenuItemConstructorOptions[] {
-    const template: Electron.MenuItemConstructorOptions[] = [];
+  public toTemplate(): MenuItemConstructorOptions[] {
+    const template: MenuItemConstructorOptions[] = [];
 
     for (const item of this.items) {
       template.push(item.toTemplate());

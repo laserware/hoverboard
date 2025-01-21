@@ -1,3 +1,9 @@
+import type {
+  KeyboardEvent,
+  MenuItemConstructorOptions,
+  Point,
+} from "electron";
+
 export const hoverboardApiKey = "__laserware_hoverboard__";
 
 declare global {
@@ -14,15 +20,15 @@ export const enum IpcChannel {
 
 export interface ShowContextMenuRequest {
   menuId: string;
-  position: Electron.Point;
+  position: Point;
   linkURL?: string;
-  template: Electron.MenuItemConstructorOptions[];
+  template: MenuItemConstructorOptions[];
 }
 
 export interface ShowContextMenuResponse {
   menuId: string;
   menuItemId: string | null;
-  event: Electron.KeyboardEvent;
+  event: KeyboardEvent;
 }
 
 export interface HoverboardGlobals {

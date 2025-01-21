@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from "electron";
+
 import {
   ContextMenuItem,
   type ContextMenuItemOptions,
@@ -45,7 +47,7 @@ export class NormalMenuItem<
     this.toolTip = options.toolTip;
   }
 
-  public toTemplate(): Electron.MenuItemConstructorOptions {
+  public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();
 
     if (this.accelerator !== undefined) {

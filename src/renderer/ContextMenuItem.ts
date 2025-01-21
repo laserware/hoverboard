@@ -1,3 +1,5 @@
+import type { MenuItemConstructorOptions } from "electron";
+
 import type { ContextMenuEvent } from "./ContextMenuEvent.js";
 import type { SubmenuMenuItem } from "./SubmenuMenuItem.js";
 
@@ -17,13 +19,13 @@ const idGenerator = (() => {
  * Some of the menu item roles don't work in a context menu, so if clicking
  * on it doesn't do anything, that's why.
  */
-export type ContextMenuItemRole = Electron.MenuItemConstructorOptions["role"];
+export type ContextMenuItemRole = MenuItemConstructorOptions["role"];
 
 /**
  * Type of context menu item. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#menuitemtype)
  * for additional information.
  */
-export type ContextMenuItemType = Electron.MenuItemConstructorOptions["type"];
+export type ContextMenuItemType = MenuItemConstructorOptions["type"];
 
 /**
  * This is the click event fired in the _renderer_ process when a context menu
@@ -144,8 +146,8 @@ export class ContextMenuItem {
    * Converts the properties of this menu item to a template that can be sent
    * to the main process to build the menu.
    */
-  public toTemplate(): Electron.MenuItemConstructorOptions {
-    const template: Electron.MenuItemConstructorOptions = { id: this.id };
+  public toTemplate(): MenuItemConstructorOptions {
+    const template: MenuItemConstructorOptions = { id: this.id };
 
     if (this.type !== undefined) {
       template.type = this.type;
