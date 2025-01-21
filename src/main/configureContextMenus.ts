@@ -50,9 +50,13 @@ export type ContextMenuOptions = {
  *
  * @param options Options for building context menus.
  */
-export function configureContextMenus(options: ContextMenuOptions): void {
+export function configureContextMenus(options: ContextMenuOptions): {
+  dispose(): void;
+} {
+  let fallbackMenuDisposable = { dispose: () => {} };
+
   if (options.fallback !== undefined) {
-    setFallbackMenu(options);
+    fallbackMenuDisposable = setFallbackMenu(options);
   }
 
   const contextMenus = new Map<string, ContextMenu>();
@@ -132,8 +136,6 @@ export function configureContextMenus(options: ContextMenuOptions): void {
         );
       }
 
-      console.log(template);
-
       const contextMenu = new ContextMenu(menuId, template);
 
       contextMenus.set(menuId, contextMenu);
@@ -167,14 +169,14 @@ export function configureContextMenus(options: ContextMenuOptions): void {
   ipcMain.handle(IpcChannel.ForShowContextMenu, handleShowContextMenu);
   ipcMain.handle(IpcChannel.ForHideContextMenu, handleHideContextMenu);
 
-  app.addListener("before-quit", (event: Event) => {
-    if (event.defaultPrevented) {
-      return;
-    }
+  return {
+    dispose(): void {
+      fallbackMenuDisposable.dispose();
 
-    ipcMain.removeHandler(IpcChannel.ForShowContextMenu);
-    ipcMain.removeHandler(IpcChannel.ForHideContextMenu);
-  });
+      ipcMain.removeHandler(IpcChannel.ForShowContextMenu);
+      ipcMain.removeHandler(IpcChannel.ForHideContextMenu);
+    },
+  };
 }
 
 /**
@@ -182,7 +184,7 @@ export function configureContextMenus(options: ContextMenuOptions): void {
  * a custom context menu explicitly specified. The menu contains standard
  * clipboard operations and the ability to inspect elements (if specified).
  */
-function setFallbackMenu(options: ContextMenuOptions): void {
+function setFallbackMenu(options: ContextMenuOptions): { dispose(): void } {
   const controller = new AbortController();
 
   const handleBrowserWindowCreated = (
@@ -239,13 +241,11 @@ function setFallbackMenu(options: ContextMenuOptions): void {
     app.removeListener("browser-window-created", handleBrowserWindowCreated);
   });
 
-  app.addListener("before-quit", (event: Event) => {
-    if (event.defaultPrevented) {
-      return;
-    }
-
-    controller.abort();
-  });
+  return {
+    dispose(): void {
+      controller.abort();
+    },
+  };
 }
 
 class ContextMenu {
