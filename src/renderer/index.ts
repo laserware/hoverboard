@@ -13,6 +13,7 @@ export {
   type ContextMenuEventType,
   type ContextMenuEventListenerOrEventListenerObject,
 } from "./ContextMenuEvent.js";
+export type { ContextMenuItem } from "./ContextMenuItem.js";
 export {
   checkbox,
   CheckboxMenuItem,
