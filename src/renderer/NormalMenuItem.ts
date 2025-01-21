@@ -12,7 +12,6 @@ export interface NormalMenuItemOptions extends ContextMenuItemOptions {
   icon?: string | undefined;
   label: string | undefined;
   registerAccelerator?: boolean | undefined;
-  sublabel?: string | undefined;
   toolTip?: string | undefined;
   click?: OnContextMenuItemClick;
 }
@@ -31,7 +30,6 @@ export class NormalMenuItem<
   public icon: string | undefined;
   public label: string | undefined;
   public registerAccelerator: boolean | undefined;
-  public sublabel: string | undefined;
   public toolTip: string | undefined;
 
   constructor(options: Options, type: ContextMenuItemType = "normal") {
@@ -44,7 +42,6 @@ export class NormalMenuItem<
     this.icon = options.icon;
     this.label = options.label;
     this.registerAccelerator = options.registerAccelerator;
-    this.sublabel = options.sublabel;
     this.toolTip = options.toolTip;
   }
 
@@ -73,10 +70,6 @@ export class NormalMenuItem<
 
     if (this.registerAccelerator !== undefined) {
       template.registerAccelerator = this.registerAccelerator;
-    }
-
-    if (this.sublabel !== undefined) {
-      template.sublabel = this.sublabel;
     }
 
     if (this.toolTip !== undefined) {

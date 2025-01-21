@@ -1,11 +1,15 @@
-import type { ContextMenuItem } from "./ContextMenuItem.js";
-import { MenuBuilder, type MenuBuilderFunction } from "./MenuBuilder.js";
 import {
-  NormalMenuItem,
-  type NormalMenuItemOptions,
-} from "./NormalMenuItem.js";
+  ContextMenuItem,
+  type ContextMenuItemOptions,
+} from "./ContextMenuItem.js";
+import { MenuBuilder, type MenuBuilderFunction } from "./MenuBuilder.js";
 
-export type SubmenuMenuItemOptions = NormalMenuItemOptions;
+export interface SubmenuMenuItemOptions extends ContextMenuItemOptions {
+  enabled?: boolean | undefined;
+  icon?: string | undefined;
+  label: string | undefined;
+  toolTip?: string | undefined;
+}
 
 export function submenu(
   options: SubmenuMenuItemOptions,
@@ -24,8 +28,12 @@ export function submenu(
   return new SubmenuMenuItem(options, init as any);
 }
 
-export class SubmenuMenuItem extends NormalMenuItem<SubmenuMenuItemOptions> {
-  readonly #items: Set<ContextMenuItem>;
+export class SubmenuMenuItem extends ContextMenuItem {
+  public enabled: boolean | undefined;
+  public icon: string | undefined;
+  public items: ContextMenuItem[];
+  public label: string | undefined;
+  public toolTip: string | undefined;
 
   constructor(options: SubmenuMenuItemOptions, build: MenuBuilderFunction);
   constructor(options: SubmenuMenuItemOptions, items: ContextMenuItem[]);
@@ -35,13 +43,13 @@ export class SubmenuMenuItem extends NormalMenuItem<SubmenuMenuItemOptions> {
   ) {
     super(options, "submenu");
 
-    this.#items = Array.isArray(init)
-      ? new Set(init)
-      : init(new MenuBuilder()).items;
+    this.items = Array.isArray(init) ? init : init(new MenuBuilder()).items;
   }
 
-  public get items(): Set<ContextMenuItem> {
-    return this.#items;
+  *[Symbol.iterator]() {
+    for (const item of this.items) {
+      yield item;
+    }
   }
 
   public toTemplate(): Electron.MenuItemConstructorOptions {
@@ -49,10 +57,10 @@ export class SubmenuMenuItem extends NormalMenuItem<SubmenuMenuItemOptions> {
 
     const submenu: Electron.MenuItemConstructorOptions[] = [];
 
-    for (const menuItem of this.items) {
-      menuItem.parent = this;
+    for (const item of this.items) {
+      item.parent = this;
 
-      submenu.push(menuItem.toTemplate());
+      submenu.push(item.toTemplate());
     }
 
     return { ...template, submenu };

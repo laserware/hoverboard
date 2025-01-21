@@ -10,17 +10,25 @@ const idGenerator = (() => {
 })();
 
 /**
- * Role for the menu item (if a {@link RoleMenuItem} or {@link SubmenuMenuItem}
- * with a role).
+ * Role for a {@linkcode RoleMenuItem}. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#roles)
+ * for additional information.
+ *
+ * @remarks
+ * Some of the menu item roles don't work in a context menu, so if clicking
+ * on it doesn't do anything, that's why.
  */
 export type ContextMenuItemRole = Electron.MenuItemConstructorOptions["role"];
 
+/**
+ * Type of context menu item. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#menuitemtype)
+ * for additional information.
+ */
 export type ContextMenuItemType = Electron.MenuItemConstructorOptions["type"];
 
 /**
  * This is the click event fired in the _renderer_ process when a context menu
- * item is clicked. It has a different signature than the `click` event from the
- * `MenuItemConstructorOptions`.
+ * item is clicked. It has a different signature than the [`click` property](https://www.electronjs.org/docs/latest/api/menu-item#menuitemclick)
+ * of the `MenuItemConstructorOptions`.
  */
 export type OnContextMenuItemClick = (
   menuItem: ContextMenuItem,
@@ -75,10 +83,14 @@ export interface ContextMenuItemOptions {
  * Base context menu item from which other context menu items are derived.
  */
 export class ContextMenuItem {
-  readonly #type: ContextMenuItemType;
-
   /** ID of the menu item. */
   public id: string;
+
+  /**
+   * Type of the context menu item. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#menuitemtype)
+   * for additional information.
+   */
+  public type: ContextMenuItemType;
 
   /** Indicates if the menu item is visible. */
   public visible: boolean | undefined;
@@ -118,22 +130,14 @@ export class ContextMenuItem {
     options: ContextMenuItemOptions = {},
     type: ContextMenuItemType = undefined,
   ) {
-    this.#type = type;
-
     this.id = options.id ?? idGenerator.next();
+    this.type = type;
     this.visible = options.visible;
+
     this.before = options.before;
     this.after = options.after;
     this.beforeGroupContaining = options.beforeGroupContaining;
     this.afterGroupContaining = options.afterGroupContaining;
-  }
-
-  /**
-   * Type of the context menu item. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#menuitemtype)
-   * for additional information.
-   */
-  public get type(): ContextMenuItemType {
-    return this.#type;
   }
 
   /**

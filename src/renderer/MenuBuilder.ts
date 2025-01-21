@@ -13,6 +13,7 @@ import {
   SeparatorMenuItem,
   type SeparatorMenuItemOptions,
 } from "./SeparatorMenuItem.js";
+import { ShareMenuItem, type ShareMenuItemOptions } from "./ShareMenuItem.js";
 import {
   SubmenuMenuItem,
   type SubmenuMenuItemOptions,
@@ -27,10 +28,10 @@ export type MenuBuilderFunction = (builder: MenuBuilder) => MenuBuilder;
  * @internal
  */
 export class MenuBuilder {
-  readonly #items: Set<ContextMenuItem> = new Set();
+  readonly #items: ContextMenuItem[] = [];
 
-  /** Unique items in the context menu. */
-  public get items(): Set<ContextMenuItem> {
+  /** Items in the context menu. */
+  public get items(): ContextMenuItem[] {
     return this.#items;
   }
 
@@ -40,7 +41,7 @@ export class MenuBuilder {
    * @param item Context menu item to add.
    */
   public add(item: ContextMenuItem): this {
-    this.#items.add(item);
+    this.#items.push(item);
     return this;
   }
 
@@ -84,31 +85,41 @@ export class MenuBuilder {
 
   /** Adds a checkbox menu item to the menu with the specified options. */
   public checkbox(options: CheckboxMenuItemOptions): this {
-    this.#items.add(new CheckboxMenuItem(options));
+    this.#items.push(new CheckboxMenuItem(options));
     return this;
   }
 
   /** Adds a normal menu item to the menu with the specified options. */
   public normal(options: NormalMenuItemOptions): this {
-    this.#items.add(new NormalMenuItem(options));
+    this.#items.push(new NormalMenuItem(options));
     return this;
   }
 
   /** Adds a radio menu item to the menu with the specified options. */
   public radio(options: RadioMenuItemOptions): this {
-    this.#items.add(new RadioMenuItem(options));
+    this.#items.push(new RadioMenuItem(options));
     return this;
   }
 
   /** Adds a role menu item to the menu with the specified options. */
   public role(options: RoleMenuItemOptions): this {
-    this.#items.add(new RoleMenuItem(options));
+    this.#items.push(new RoleMenuItem(options));
     return this;
   }
 
   /** Adds a separator menu item to the menu. */
   public separator(options?: SeparatorMenuItemOptions): this {
-    this.#items.add(new SeparatorMenuItem(options));
+    this.#items.push(new SeparatorMenuItem(options));
+    return this;
+  }
+
+  /**
+   * Adds a Share Menu item to the menu.
+   *
+   * @platforms macOS
+   */
+  public shareMenu(options: ShareMenuItemOptions): this {
+    this.#items.push(new ShareMenuItem(options));
     return this;
   }
 
@@ -134,7 +145,7 @@ export class MenuBuilder {
     options: SubmenuMenuItemOptions,
     init: ContextMenuItem[] | MenuBuilderFunction,
   ): this {
-    this.#items.add(new SubmenuMenuItem(options, init as any));
+    this.#items.push(new SubmenuMenuItem(options, init as any));
     return this;
   }
 }

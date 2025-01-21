@@ -70,7 +70,7 @@ export function configureContextMenus(options: ContextMenuOptions): void {
     return new Promise((resolve) => {
       closeContextMenu(menuId, browserWindow);
 
-      for (const item of menuTemplateIterator(template)) {
+      for (const item of walkMenuTemplate(template)) {
         item.icon = getIconForMenuItem(item);
 
         if (item.type !== "separator" && item.role === undefined) {
@@ -125,6 +125,8 @@ export function configureContextMenus(options: ContextMenuOptions): void {
           },
         );
       }
+
+      console.log(template);
 
       const contextMenu = new ContextMenu(menuId, template);
 
@@ -283,17 +285,17 @@ function getIconForMenuItem(
   return image.resize({ width: 16, height: 16, quality: "best" });
 }
 
-function* menuTemplateIterator(
+function* walkMenuTemplate(
   template: Electron.MenuItemConstructorOptions[],
 ): Generator<Electron.MenuItemConstructorOptions, void, void> {
   function* recurse(
     items: Electron.MenuItemConstructorOptions[],
   ): Generator<Electron.MenuItemConstructorOptions, void, void> {
     for (const item of items) {
+      yield item;
+
       if (Array.isArray(item.submenu)) {
         yield* recurse(item.submenu);
-      } else {
-        yield item;
       }
     }
   }

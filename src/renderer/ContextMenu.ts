@@ -36,13 +36,10 @@ export function contextMenu(
 
 /**
  * Provides the means to create and show custom context menus.
- *
- * @public
  */
 export class ContextMenu extends EventTarget {
-  readonly #items: Set<ContextMenuItem>;
-
   public id: string;
+  public items: ContextMenuItem[];
 
   /**
    * Creates a new context menu with the specified `items`.
@@ -61,34 +58,65 @@ export class ContextMenu extends EventTarget {
     super();
 
     this.id = window.crypto.randomUUID().substring(0, 6);
-    this.#items = Array.isArray(init)
-      ? new Set(init)
-      : init(new MenuBuilder()).items;
+
+    this.items = Array.isArray(init) ? init : init(new MenuBuilder()).items;
   }
 
   *[Symbol.iterator]() {
-    function* recurse(
-      items: Set<ContextMenuItem>,
-    ): Generator<ContextMenuItem, void, void> {
-      for (const item of items) {
-        yield item;
-
-        if (item instanceof SubmenuMenuItem) {
-          yield* recurse(item.items);
-        }
-      }
+    for (const item of this.items) {
+      yield item;
     }
-
-    yield* recurse(this.items);
   }
 
   /**
-   * Unique items in the context menu.
+   * Appends the specified `item` to the context menu.
    *
-   * @readonly
+   * @param item Menu item to append to context menu.
    */
-  public get items(): Set<ContextMenuItem> {
-    return this.#items;
+  public append(item: ContextMenuItem): void {
+    this.items.push(item);
+  }
+
+  /**
+   * Inserts the specified `item` in the specified position of the context
+   * menu.
+   *
+   * @param position Position in the menu to add the item.
+   * @param item Item to insert into the context menu.
+   */
+  public insert(position: number, item: ContextMenuItem): void {
+    this.items = [
+      ...this.items.slice(0, position),
+      item,
+      ...this.items.slice(position),
+    ];
+  }
+
+  /**
+   * Removes the specified `item` from the context menu.
+   *
+   * @param item Menu item to remove from context menu.
+   */
+  public remove(item: ContextMenuItem): void {
+    this.items = this.items.filter((existingItem) => existingItem !== item);
+  }
+
+  /**
+   * Returns the menu item associated with the specified `id`. If the menu
+   * item doesn't exist, returns null.
+   *
+   * @param id ID of the menu item to find.
+   *
+   * @returns The menu item if found, otherwise null.
+   */
+  public getMenuItemById(id: string): ContextMenuItem | null {
+    for (const item of walkContextMenu(this)) {
+      if (item.id === id) {
+        return item;
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -128,7 +156,7 @@ export class ContextMenu extends EventTarget {
 
   /**
    * Adds an event listener for the show event of a context menu. This event
-   * is dispatched immediately after the menu is shown.
+   * is dispatched immediately before the menu is shown.
    */
   public addEventListener(
     type: "show",
@@ -175,7 +203,7 @@ export class ContextMenu extends EventTarget {
     const globals = getHoverboardGlobals();
 
     globals.hideContextMenu(this.id).then(() => {
-      this.dispatchEvent(new ContextMenuEvent("hide"));
+      this.dispatchEvent(new ContextMenuEvent("hide", { menuItem: null }));
     });
   }
 
@@ -193,33 +221,65 @@ export class ContextMenu extends EventTarget {
 
     const globals = getHoverboardGlobals();
 
-    const response = await globals.showContextMenu({
+    let linkURL: string | undefined;
+
+    const dispatchHideEvent = (
+      menuItem: ContextMenuItem | null,
+      triggeredByAccelerator?: boolean,
+    ): void => {
+      this.dispatchEvent(
+        new ContextMenuEvent("hide", {
+          clientX: x,
+          clientY: y,
+          menuItem,
+          triggeredByAccelerator,
+        }),
+      );
+    };
+
+    // If any of the elements in the clicked point are an anchor with an
+    // `href` property, send that to the context menu builder in the main
+    // process so we can add the appropriate link actions to the menu:
+    for (const element of document.elementsFromPoint(x, y)) {
+      if (element instanceof HTMLAnchorElement) {
+        linkURL = element.href || undefined;
+      }
+
+      if (linkURL !== undefined) {
+        break;
+      }
+    }
+
+    const promise = globals.showContextMenu({
       menuId: this.id,
       position: { x, y },
       template,
+      linkURL,
     });
 
-    console.log(response.menuItemId);
+    this.dispatchEvent(
+      new ContextMenuEvent("show", {
+        clientX: x,
+        clientY: y,
+        menuItem: null,
+      } satisfies ContextMenuEventInit),
+    );
+
+    const response = await promise;
 
     if (response.menuId !== this.id) {
       return null;
     }
 
-    this.dispatchEvent(
-      new ContextMenuEvent("show", {
-        ...response.event,
-        clientX: x,
-        clientY: y,
-      } satisfies ContextMenuEventInit),
-    );
-
     if (response.menuItemId === null) {
+      dispatchHideEvent(null);
+
       return null;
     }
 
     let menuItem: ContextMenuItem | null = null;
 
-    for (const item of this) {
+    for (const item of walkContextMenu(this)) {
       if (item.id === response.menuItemId) {
         menuItem = item;
         break;
@@ -227,6 +287,8 @@ export class ContextMenu extends EventTarget {
     }
 
     if (menuItem === null) {
+      dispatchHideEvent(null);
+
       return null;
     }
 
@@ -235,15 +297,34 @@ export class ContextMenu extends EventTarget {
         ...response.event,
         clientX: x,
         clientY: y,
+        menuItem,
       } satisfies ContextMenuEventInit);
 
       menuItem.click(menuItem, event);
 
       this.dispatchEvent(event);
-
-      return menuItem;
     }
 
-    return null;
+    dispatchHideEvent(menuItem, response.event.triggeredByAccelerator);
+
+    return menuItem;
   }
+}
+
+function* walkContextMenu(
+  menu: ContextMenu,
+): Generator<ContextMenuItem, void, void> {
+  function* recurse(
+    items: ContextMenuItem[],
+  ): Generator<ContextMenuItem, void, void> {
+    for (const item of items) {
+      yield item;
+
+      if (item instanceof SubmenuMenuItem) {
+        yield* recurse(item.items);
+      }
+    }
+  }
+
+  yield* recurse(menu.items);
 }

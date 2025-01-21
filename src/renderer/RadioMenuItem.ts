@@ -20,6 +20,18 @@ export class RadioMenuItem extends NormalMenuItem<RadioMenuItemOptions> {
     this.checked = options.checked;
   }
 
+  public select(): void {
+    this.checked = true;
+
+    if (this.parent !== undefined) {
+      for (const item of this.parent) {
+        if (item instanceof RadioMenuItem && item !== this) {
+          item.checked = false;
+        }
+      }
+    }
+  }
+
   public toTemplate(): Electron.MenuItemConstructorOptions {
     const template = super.toTemplate();
 

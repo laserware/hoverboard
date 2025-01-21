@@ -1,13 +1,15 @@
-import { asElement, createElement as html } from "@laserware/dominator";
+import {
+  asElement,
+  createElement,
+  createElement as html,
+} from "@laserware/dominator";
 
 import {
-  checkbox,
+  type ContextMenu,
+  type ContextMenuEvent,
+  RadioMenuItem,
   contextMenu,
-  normal,
-  radio,
-  role,
-  separator,
-  submenu,
+  items,
 } from "../../src/renderer";
 
 let isChecked = false;
@@ -16,26 +18,50 @@ let activeOption = "1";
 start();
 
 function start(): void {
+  const menu = createContextMenu();
+
+  menu.addEventListener("show", (event: ContextMenuEvent) => {
+    console.log("Shown", event);
+  });
+
+  menu.addEventListener("hide", (event: ContextMenuEvent) => {
+    console.log("Hidden", event);
+  });
+
+  menu.addEventListener("click", (event: ContextMenuEvent) => {
+    console.log("Clicked", event);
+  });
+
   const menuButton = html(
     "button",
     {
-      oncontextmenu(event) {
+      async oncontextmenu(event) {
         event.preventDefault();
 
-        createContextMenu(event);
+        const element = asElement(event.currentTarget);
+
+        const clickedItem = await menu.show(event.clientX, event.clientY);
+
+        if (clickedItem instanceof RadioMenuItem) {
+          clickedItem.select();
+        }
       },
     },
-    "Menu",
+    createElement(
+      "a",
+      {
+        href: "https://google.com",
+      },
+      "MENU",
+    ),
   );
 
   document.body.appendChild(menuButton);
 }
 
-function createContextMenu(event: MouseEvent) {
-  const element = asElement(event.currentTarget);
-
-  const menuFunctional = contextMenu([
-    normal({
+function createContextMenu(): ContextMenu {
+  return contextMenu([
+    items.normal({
       id: "delete",
       label: "Delete",
       toolTip: "Delete some stuff.",
@@ -43,25 +69,23 @@ function createContextMenu(event: MouseEvent) {
         window.alert("Deleted!");
       },
     }),
-    checkbox({
+    items.checkbox({
       label: "Checkbox",
       checked: isChecked,
       click() {
         isChecked = !isChecked;
       },
     }),
-    separator(),
-    submenu(
+    items.separator(),
+    items.submenu(
       {
         id: "submenu",
         label: "Radio Options",
-        sublabel: "This is a sublabel",
-        click() {
-          console.log("Radio options clicked");
-        },
+        toolTip: "Hello!",
       },
       ["1", "2", "3"].map((value) =>
-        radio({
+        items.radio({
+          id: `radio-${value}`,
           label: `Option ${value}`,
           checked: activeOption === value,
           click() {
@@ -70,81 +94,11 @@ function createContextMenu(event: MouseEvent) {
         }),
       ),
     ),
-    separator(),
-    role("cut"),
-    role("copy"),
-    role("paste"),
+    items.separator(),
+    items.shareMenu({ urls: ["https://google.com"] }),
+    items.role({
+      role: "cut",
+      accelerator: "CommandOrControl+X",
+    }),
   ]);
-
-  menuFunctional.show(event.clientX, event.clientY);
-
-  return;
-
-  const menuWithBuilder = contextMenu((builder) => {
-    builder
-      .normal({
-        id: "delete",
-        label: "Delete",
-        toolTip: "Delete some stuff.",
-        click() {
-          window.alert("Deleted!");
-        },
-      })
-      .checkbox({
-        label: "Checkbox",
-        checked: isChecked,
-        click() {
-          isChecked = !isChecked;
-        },
-      })
-      .separator()
-      .submenu(
-        {
-          id: "submenu",
-          label: "Radio Options",
-          sublabel: "This is a sublabel",
-          click() {
-            console.log("Radio options clicked");
-          },
-        },
-        (builder) =>
-          builder.map(["1", "2", "3"], (value) =>
-            builder.radio({
-              label: `Option ${value}`,
-              checked: activeOption === value,
-              click() {
-                activeOption = value;
-              },
-            }),
-          ),
-      )
-      .separator()
-      .role({ role: "cut" })
-      .role({ role: "copy" })
-      .role({ role: "paste" });
-
-    builder.normal({
-      id: "add",
-      before: ["delete"],
-      label: "Add",
-      click() {
-        console.log("YAY");
-        window.alert("Added");
-      },
-    });
-
-    builder.separator({ before: ["delete"] });
-
-    return builder;
-  });
-
-  // menu.addEventListener("open", () => {
-  //   console.log("Opened");
-  // });
-  //
-  // menu.addEventListener("close", () => {
-  //   console.log("Closed");
-  // });
-
-  menuWithBuilder.show(event.clientX, event.clientY);
 }

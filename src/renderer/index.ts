@@ -1,3 +1,11 @@
+import { checkbox } from "./CheckboxMenuItem.js";
+import { normal } from "./NormalMenuItem.js";
+import { radio } from "./RadioMenuItem.js";
+import { role } from "./RoleMenuItem.js";
+import { separator } from "./SeparatorMenuItem.js";
+import { shareMenu } from "./ShareMenuItem.js";
+import { submenu } from "./SubmenuMenuItem.js";
+
 export { contextMenu, ContextMenu } from "./ContextMenu.js";
 export {
   ContextMenuEvent,
@@ -31,7 +39,22 @@ export {
   type SeparatorMenuItemOptions,
 } from "./SeparatorMenuItem.js";
 export {
+  shareMenu,
+  ShareMenuItem,
+  type ShareMenuItemOptions,
+} from "./ShareMenuItem.js";
+export {
   submenu,
   SubmenuMenuItem,
   type SubmenuMenuItemOptions,
 } from "./SubmenuMenuItem.js";
+
+export const items = {
+  checkbox,
+  normal,
+  radio,
+  role,
+  separator,
+  shareMenu,
+  submenu,
+};
