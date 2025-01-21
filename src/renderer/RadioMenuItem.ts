@@ -14,13 +14,13 @@ export function radio(options: RadioMenuItemOptions): RadioMenuItem {
 }
 
 export class RadioMenuItem extends NormalMenuItem<RadioMenuItemOptions> {
-  public checked: boolean | undefined;
-
   constructor(options: RadioMenuItemOptions) {
     super(options, "radio");
 
     this.checked = options.checked;
   }
+
+  public checked: boolean | undefined;
 
   public select(): void {
     this.checked = true;

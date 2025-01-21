@@ -32,10 +32,6 @@ export function shareMenu(options: ShareMenuItemOptions): ShareMenuItem {
  * Share menu for sharing items on macOS.
  */
 export class ShareMenuItem extends ContextMenuItem {
-  public filePaths: string[] | undefined;
-  public texts: string[] | undefined;
-  public urls: string[] | undefined;
-
   constructor(options: ShareMenuItemOptions) {
     super(options, undefined);
 
@@ -43,6 +39,10 @@ export class ShareMenuItem extends ContextMenuItem {
     this.texts = options.texts;
     this.urls = options.urls;
   }
+
+  public filePaths: string[] | undefined;
+  public texts: string[] | undefined;
+  public urls: string[] | undefined;
 
   public toTemplate(): MenuItemConstructorOptions {
     this.validate();

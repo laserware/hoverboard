@@ -2,6 +2,7 @@ import type { MenuItemConstructorOptions } from "electron";
 
 import type { ContextMenuEvent } from "./ContextMenuEvent.js";
 import type { SubmenuMenuItem } from "./SubmenuMenuItem.js";
+import type { ContextMenuItemType } from "./types.js";
 
 const idGenerator = (() => {
   let value = 1;
@@ -10,22 +11,6 @@ const idGenerator = (() => {
     next: () => `menu-item-${(value++).toString()}`,
   };
 })();
-
-/**
- * Role for a {@linkcode RoleMenuItem}. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#roles)
- * for additional information.
- *
- * @remarks
- * Some of the menu item roles don't work in a context menu, so if clicking
- * on it doesn't do anything, that's why.
- */
-export type ContextMenuItemRole = MenuItemConstructorOptions["role"];
-
-/**
- * Type of context menu item. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#menuitemtype)
- * for additional information.
- */
-export type ContextMenuItemType = MenuItemConstructorOptions["type"];
 
 /**
  * This is the click event fired in the _renderer_ process when a context menu
@@ -85,6 +70,19 @@ export interface ContextMenuItemOptions {
  * Base context menu item from which other context menu items are derived.
  */
 export class ContextMenuItem {
+  constructor(
+    options: ContextMenuItemOptions = {},
+    type: ContextMenuItemType = undefined,
+  ) {
+    this.id = options.id ?? idGenerator.next();
+    this.type = type;
+    this.visible = options.visible;
+    this.before = options.before;
+    this.after = options.after;
+    this.beforeGroupContaining = options.beforeGroupContaining;
+    this.afterGroupContaining = options.afterGroupContaining;
+  }
+
   /** ID of the menu item. */
   public id: string;
 
@@ -127,20 +125,6 @@ export class ContextMenuItem {
    * this is undefined.
    */
   public parent: SubmenuMenuItem | undefined;
-
-  constructor(
-    options: ContextMenuItemOptions = {},
-    type: ContextMenuItemType = undefined,
-  ) {
-    this.id = options.id ?? idGenerator.next();
-    this.type = type;
-    this.visible = options.visible;
-
-    this.before = options.before;
-    this.after = options.after;
-    this.beforeGroupContaining = options.beforeGroupContaining;
-    this.afterGroupContaining = options.afterGroupContaining;
-  }
 
   /**
    * Converts the properties of this menu item to a template that can be sent

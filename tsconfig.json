@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "declarationMap": false,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "lib": ["DOM", "ESNext"],
@@ -16,6 +17,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "ESNext",
+    "useDefineForClassFields": false,
     "verbatimModuleSyntax": true
   },
   "include": ["src", "./main.d.ts", "./renderer.d.ts", "./tsup.config.ts"],

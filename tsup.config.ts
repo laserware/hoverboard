@@ -63,5 +63,9 @@ export default defineConfig(() => {
       entry: { renderer: "src/renderer/index.ts" },
       platform: "browser",
     }),
+    esm("elements", {
+      entry: { elements: "src/renderer/elements/index.ts" },
+      platform: "browser",
+    }),
   ];
 });

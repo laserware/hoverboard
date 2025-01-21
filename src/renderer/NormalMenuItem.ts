@@ -3,9 +3,9 @@ import type { MenuItemConstructorOptions } from "electron";
 import {
   ContextMenuItem,
   type ContextMenuItemOptions,
-  type ContextMenuItemType,
   type OnContextMenuItemClick,
 } from "./ContextMenuItem.js";
+import type { ContextMenuItemType } from "./types.js";
 
 export interface NormalMenuItemOptions extends ContextMenuItemOptions {
   accelerator?: string | undefined;
@@ -25,15 +25,6 @@ export function normal(options: NormalMenuItemOptions): NormalMenuItem {
 export class NormalMenuItem<
   Options extends NormalMenuItemOptions = NormalMenuItemOptions,
 > extends ContextMenuItem {
-  public accelerator: string | undefined;
-  public acceleratorWorksWhenHidden: boolean | undefined;
-  public click: OnContextMenuItemClick | undefined;
-  public enabled: boolean | undefined;
-  public icon: string | undefined;
-  public label: string | undefined;
-  public registerAccelerator: boolean | undefined;
-  public toolTip: string | undefined;
-
   constructor(options: Options, type: ContextMenuItemType = "normal") {
     super(options, type);
 
@@ -46,6 +37,15 @@ export class NormalMenuItem<
     this.registerAccelerator = options.registerAccelerator;
     this.toolTip = options.toolTip;
   }
+
+  public accelerator: string | undefined;
+  public acceleratorWorksWhenHidden: boolean | undefined;
+  public click: OnContextMenuItemClick | undefined;
+  public enabled: boolean | undefined;
+  public icon: string | undefined;
+  public label: string | undefined;
+  public registerAccelerator: boolean | undefined;
+  public toolTip: string | undefined;
 
   public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();

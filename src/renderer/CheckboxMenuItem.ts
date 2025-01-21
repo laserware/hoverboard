@@ -30,14 +30,14 @@ export function checkbox(options: CheckboxMenuItemOptions): CheckboxMenuItem {
  * at a time, use the {@linkcode RadioMenuItem} instead.
  */
 export class CheckboxMenuItem extends NormalMenuItem<CheckboxMenuItemOptions> {
-  /** Indicates if checkbox is currently checked. */
-  public checked: boolean | undefined;
-
   constructor(options: CheckboxMenuItemOptions) {
     super(options, "checkbox");
 
     this.checked = options.checked;
   }
+
+  /** Indicates if checkbox is currently checked. */
+  public checked: boolean | undefined;
 
   public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();

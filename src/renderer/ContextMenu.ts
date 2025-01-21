@@ -40,9 +40,6 @@ export function contextMenu(
  * Provides the means to create and show custom context menus.
  */
 export class ContextMenu extends EventTarget {
-  public id: string;
-  public items: ContextMenuItem[];
-
   /**
    * Creates a new context menu with the specified `items`.
    *
@@ -69,6 +66,9 @@ export class ContextMenu extends EventTarget {
       yield item;
     }
   }
+
+  public id: string;
+  public items: ContextMenuItem[];
 
   /**
    * Appends the specified `item` to the context menu.
@@ -201,12 +201,12 @@ export class ContextMenu extends EventTarget {
   /**
    * Hides the context menu (if it is open).
    */
-  public hide(): void {
+  public async hide(): Promise<void> {
     const globals = getHoverboardGlobals();
 
-    globals.hideContextMenu(this.id).then(() => {
-      this.dispatchEvent(new ContextMenuEvent("hide", { menuItem: null }));
-    });
+    await globals.hideContextMenu(this.id);
+
+    this.dispatchEvent(new ContextMenuEvent("hide", { menuItem: null }));
   }
 
   /**
@@ -223,8 +223,6 @@ export class ContextMenu extends EventTarget {
 
     const globals = getHoverboardGlobals();
 
-    let linkURL: string | undefined;
-
     const dispatchHideEvent = (
       menuItem: ContextMenuItem | null,
       triggeredByAccelerator?: boolean,
@@ -238,6 +236,8 @@ export class ContextMenu extends EventTarget {
         }),
       );
     };
+
+    let linkURL: string | undefined;
 
     // If any of the elements in the clicked point are an anchor with an
     // `href` property, send that to the context menu builder in the main

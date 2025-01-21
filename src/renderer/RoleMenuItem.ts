@@ -3,8 +3,8 @@ import type { MenuItemConstructorOptions } from "electron";
 import {
   ContextMenuItem,
   type ContextMenuItemOptions,
-  type ContextMenuItemRole,
 } from "./ContextMenuItem.js";
+import type { ContextMenuItemRole } from "./types.js";
 
 export interface RoleMenuItemOptions extends ContextMenuItemOptions {
   accelerator?: string | undefined;
@@ -27,14 +27,6 @@ export function role(
 }
 
 export class RoleMenuItem extends ContextMenuItem {
-  public accelerator: string | undefined;
-  public acceleratorWorksWhenHidden: boolean | undefined;
-  public enabled: boolean | undefined;
-  public icon: string | undefined;
-  public registerAccelerator: boolean | undefined;
-  public role: ContextMenuItemRole;
-  public tooltip: string | undefined;
-
   constructor(role: ContextMenuItemRole);
   constructor(options: RoleMenuItemOptions);
   constructor(init: ContextMenuItemRole | RoleMenuItemOptions) {
@@ -58,6 +50,14 @@ export class RoleMenuItem extends ContextMenuItem {
       this.tooltip = options.tooltip;
     }
   }
+
+  public accelerator: string | undefined;
+  public acceleratorWorksWhenHidden: boolean | undefined;
+  public enabled: boolean | undefined;
+  public icon: string | undefined;
+  public registerAccelerator: boolean | undefined;
+  public role: ContextMenuItemRole;
+  public tooltip: string | undefined;
 
   public toTemplate(): MenuItemConstructorOptions {
     const template = super.toTemplate();

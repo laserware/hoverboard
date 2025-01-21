@@ -5,6 +5,7 @@
     "declaration": true,
     "declarationMap": false,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["DOM", "ESNext"],
     "module": "ESNext",
@@ -17,6 +18,7 @@
     "strict": true,
     "strictNullChecks": false,
     "target": "ESNext",
+    "useDefineForClassFields": false,
     "verbatimModuleSyntax": true
   },
   "include": ["src"],

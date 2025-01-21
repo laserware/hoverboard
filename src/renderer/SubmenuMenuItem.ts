@@ -31,12 +31,6 @@ export function submenu(
 }
 
 export class SubmenuMenuItem extends ContextMenuItem {
-  public enabled: boolean | undefined;
-  public icon: string | undefined;
-  public items: ContextMenuItem[];
-  public label: string | undefined;
-  public toolTip: string | undefined;
-
   constructor(options: SubmenuMenuItemOptions, build: MenuBuilderFunction);
   constructor(options: SubmenuMenuItemOptions, items: ContextMenuItem[]);
   constructor(
@@ -47,6 +41,12 @@ export class SubmenuMenuItem extends ContextMenuItem {
 
     this.items = Array.isArray(init) ? init : init(new MenuBuilder()).items;
   }
+
+  public enabled: boolean | undefined;
+  public icon: string | undefined;
+  public items: ContextMenuItem[];
+  public label: string | undefined;
+  public toolTip: string | undefined;
 
   *[Symbol.iterator]() {
     for (const item of this.items) {
