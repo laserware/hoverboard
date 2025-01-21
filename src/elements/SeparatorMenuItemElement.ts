@@ -1,4 +1,5 @@
 import type { MenuItemConstructorOptions } from "electron";
+
 import {
   type ContextMenuItemAttributes,
   ContextMenuItemElement,

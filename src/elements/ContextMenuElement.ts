@@ -1,13 +1,16 @@
 import type { MenuItemConstructorOptions } from "electron";
 
-import { getHoverboardGlobals } from "../../sandbox/globals.js";
-import type { BooleanAttribute } from "../types.js";
+import { getHoverboardGlobals } from "../sandbox/globals.js";
 import {
   ContextMenuEvent,
   type ContextMenuEventInit,
   type ContextMenuEventListenerOrEventListenerObject,
 } from "./ContextMenuEvent.js";
-import { ContextMenuItemElement, property } from "./ContextMenuItemElement.js";
+import {
+  type BooleanAttribute,
+  ContextMenuItemElement,
+  property,
+} from "./ContextMenuItemElement.js";
 import { SharingItemEntryElement } from "./SharingItemEntryElement.js";
 import { SubmenuMenuItemElement } from "./SubmenuMenuItemElement.js";
 

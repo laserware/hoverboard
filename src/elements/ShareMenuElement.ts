@@ -1,4 +1,5 @@
 import type { MenuItemConstructorOptions, SharingItem } from "electron";
+
 import { ContextMenuItemElement } from "./ContextMenuItemElement.js";
 import { SharingItemEntryElement } from "./SharingItemEntryElement.js";
 

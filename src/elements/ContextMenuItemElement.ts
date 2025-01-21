@@ -1,8 +1,8 @@
 import type { MenuItemConstructorOptions } from "electron";
 
-import type { BooleanAttribute, ContextMenuItemType } from "../types.js";
-import type { ContextMenuElement } from "./ContextMenuElement.js";
-import type { SubmenuMenuItemElement } from "./SubmenuMenuItemElement.js";
+import type { ContextMenuItemType } from "../renderer/types.js";
+
+export type BooleanAttribute = "true" | "false" | null;
 
 export interface ContextMenuItemAttributes {
   id: string;

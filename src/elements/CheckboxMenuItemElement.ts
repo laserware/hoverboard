@@ -1,19 +1,19 @@
 import type { MenuItemConstructorOptions } from "electron";
 
-import type { BooleanAttribute } from "../types.js";
 import {
+  type BooleanAttribute,
   type ContextMenuItemAttributes,
   property,
 } from "./ContextMenuItemElement.js";
 import { NormalMenuItemElement } from "./NormalMenuItemElement.js";
 
-export interface RadioMenuItemAttributes extends ContextMenuItemAttributes {
+export interface CheckboxMenuItemAttributes extends ContextMenuItemAttributes {
   checked: BooleanAttribute;
 }
 
-export class RadioMenuItemElement extends NormalMenuItemElement<RadioMenuItemAttributes> {
+export class CheckboxMenuItemElement extends NormalMenuItemElement<CheckboxMenuItemAttributes> {
   constructor() {
-    super("radio");
+    super("checkbox");
   }
 
   @property({ type: Boolean })

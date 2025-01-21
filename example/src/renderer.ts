@@ -1,12 +1,6 @@
 import { asElement, createElement as html } from "@laserware/dominator";
 
 import {
-  RadioMenuItem,
-  type ContextMenuEvent as RendererContextMenuEvent,
-  contextMenu,
-  items,
-} from "../../src/renderer";
-import {
   CheckboxMenuItemElement,
   type ContextMenuElement,
   type ContextMenuItemElement,
@@ -14,7 +8,13 @@ import {
   RadioMenuItemElement,
   type SubmenuMenuItemElement,
   registerElements,
-} from "../../src/renderer/elements";
+} from "../../src/elements";
+import {
+  RadioMenuItem,
+  type ContextMenuEvent as RendererContextMenuEvent,
+  contextMenu,
+  items,
+} from "../../src/renderer";
 
 let isChecked = false;
 let activeOption = "1";

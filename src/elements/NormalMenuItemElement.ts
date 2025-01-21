@@ -1,24 +1,29 @@
 import type { MenuItemConstructorOptions } from "electron";
-import type { BooleanAttribute, ContextMenuItemRole } from "../types.js";
+
+import type { ContextMenuItemType } from "../renderer/types.js";
+import type { ContextMenuEventListenerOrEventListenerObject } from "./ContextMenuEvent.js";
 import {
+  type BooleanAttribute,
   type ContextMenuItemAttributes,
   ContextMenuItemElement,
   property,
 } from "./ContextMenuItemElement.js";
 
-export interface RoleMenuItemAttributes extends ContextMenuItemAttributes {
+export interface NormalMenuItemAttributes extends ContextMenuItemAttributes {
   accelerator: string | null;
   "accelerator-works-when-hidden": BooleanAttribute;
   enabled: BooleanAttribute;
   icon: string | null;
-  of: ContextMenuItemRole | null;
+  label: string | null;
   "register-accelerator": BooleanAttribute;
   tooltip: string | null;
 }
 
-export class RoleMenuItemElement extends ContextMenuItemElement<RoleMenuItemAttributes> {
-  constructor() {
-    super(undefined);
+export class NormalMenuItemElement<
+  A extends Record<string, any> = NormalMenuItemAttributes,
+> extends ContextMenuItemElement<A> {
+  constructor(type: ContextMenuItemType = "normal") {
+    super(type);
   }
 
   @property({ type: String })
@@ -34,7 +39,7 @@ export class RoleMenuItemElement extends ContextMenuItemElement<RoleMenuItemAttr
   public icon: string | undefined;
 
   @property({ type: String })
-  public of: ContextMenuItemRole | undefined;
+  public label: string | undefined;
 
   @property({ attribute: "register-accelerator", type: Boolean })
   public registerAccelerator: boolean | undefined;
@@ -61,8 +66,8 @@ export class RoleMenuItemElement extends ContextMenuItemElement<RoleMenuItemAttr
       template.icon = this.icon;
     }
 
-    if (this.of !== undefined) {
-      template.role = this.of;
+    if (this.label !== undefined) {
+      template.label = this.label;
     }
 
     if (this.registerAccelerator !== undefined) {
@@ -74,5 +79,29 @@ export class RoleMenuItemElement extends ContextMenuItemElement<RoleMenuItemAttr
     }
 
     return template;
+  }
+
+  public addEventListener(
+    type: "click",
+    listener: ContextMenuEventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions,
+  ): void {
+    super.addEventListener(
+      type,
+      listener as EventListenerOrEventListenerObject,
+      options,
+    );
+  }
+
+  public removeEventListener(
+    type: "click",
+    listener: ContextMenuEventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions,
+  ): void {
+    super.removeEventListener(
+      type,
+      listener as EventListenerOrEventListenerObject,
+      options,
+    );
   }
 }

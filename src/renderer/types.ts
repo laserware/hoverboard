@@ -1,7 +1,5 @@
 import type { MenuItemConstructorOptions } from "electron";
 
-export type BooleanAttribute = "true" | "false" | null;
-
 /**
  * Role for a {@linkcode RoleMenuItem}. See the [Electron documentation](https://www.electronjs.org/docs/latest/api/menu-item#roles)
  * for additional information.
