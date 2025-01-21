@@ -17,8 +17,11 @@
     },
     "./renderer": {
       "types": "./dist/renderer.d.ts",
-      "import": "./dist/renderer.mjs",
-      "require": "./dist/renderer.cjs"
+      "import": "./dist/renderer.mjs"
+    },
+    "./elements": {
+      "types": "./dist/elements.d.ts",
+      "import": "./dist/elements.mjs"
     },
     "./preload": {
       "import": "./dist/preload.mjs",
