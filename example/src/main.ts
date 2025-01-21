@@ -1,5 +1,8 @@
+import { join } from "node:path";
+
 import { BrowserWindow, app } from "electron";
-import { ApplicationMenu, configureContextMenus } from "../../src/main";
+
+import { configureContextMenus } from "../../src/main";
 
 function createWindow() {
   // Create the browser window.
@@ -9,6 +12,7 @@ function createWindow() {
     webPreferences: {
       contextIsolation: false,
       nodeIntegration: true,
+      preload: join(__dirname, "..", "preload", "preload.js"),
     },
   });
 
@@ -25,38 +29,12 @@ function createWindow() {
 
 app.whenReady().then(() => {
   configureContextMenus({
-    appendInspectElementToMenus: true,
-    appendLinkHandlersToMenus: true,
-    enableDefaultMenu: true,
+    inspectElement: true,
+    linkHandlers: true,
+    fallback: true,
   });
 
   createWindow();
-
-  const menu = ApplicationMenu.create((builder) => {
-    builder
-      .role({ role: "appMenu" })
-      .role({ role: "fileMenu" })
-      .role({ role: "editMenu" })
-      .role({ role: "viewMenu" })
-      .role({ role: "windowMenu" })
-      .submenu({ role: "help" }, (builder) =>
-        builder.normal({
-          label: "Learn More",
-          async click() {
-            const { shell } = require("electron");
-            await shell.openExternal("https://electronjs.org");
-          },
-        }),
-      );
-
-    return builder;
-  })
-    .build()
-    .set();
-
-  menu.addListener("click", (...args) => {
-    console.log(args);
-  });
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {

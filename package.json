@@ -33,23 +33,18 @@
   "publishConfig": {
     "access": "public"
   },
-  "sideEffects": false,
+  "sideEffects": true,
   "scripts": {
     "build": "tsup --no-splitting",
     "prepublishOnly": "bun run build",
-    "preversion": "bun run lint && bun run typecheck",
-    "version": "bun run format && git add -A src",
+    "preversion": "bun run check && bun run typecheck",
+    "version": "git add -A src",
     "postversion": "git push && git push --tags",
     "ci": "biome ci src",
-    "format": "biome check --formatter-enabled=true --linter-enabled=false --organize-imports-enabled=true --write src example/src",
-    "lint": "biome lint src example/src",
+    "check": "biome check --write src example/src",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "example": "cd example && bun run start"
-  },
-  "dependencies": {
-    "@laserware/arcade": "^3.13.3",
-    "@laserware/dominator": "^4.0.2"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

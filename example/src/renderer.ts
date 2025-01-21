@@ -1,6 +1,14 @@
 import { asElement, createElement as html } from "@laserware/dominator";
 
-import { ContextMenu } from "../../src/renderer";
+import {
+  checkbox,
+  contextMenu,
+  normal,
+  radio,
+  role,
+  separator,
+  submenu,
+} from "../../src/renderer";
 
 let isChecked = false;
 let activeOption = "1";
@@ -24,9 +32,55 @@ function start(): void {
 }
 
 function createContextMenu(event: MouseEvent) {
-  const ipcRenderer = window.require("electron").ipcRenderer;
+  const element = asElement(event.currentTarget);
 
-  const menu = ContextMenu.create("Test", ipcRenderer, (builder) => {
+  const menuFunctional = contextMenu([
+    normal({
+      id: "delete",
+      label: "Delete",
+      toolTip: "Delete some stuff.",
+      click() {
+        window.alert("Deleted!");
+      },
+    }),
+    checkbox({
+      label: "Checkbox",
+      checked: isChecked,
+      click() {
+        isChecked = !isChecked;
+      },
+    }),
+    separator(),
+    submenu(
+      {
+        id: "submenu",
+        label: "Radio Options",
+        sublabel: "This is a sublabel",
+        click() {
+          console.log("Radio options clicked");
+        },
+      },
+      ["1", "2", "3"].map((value) =>
+        radio({
+          label: `Option ${value}`,
+          checked: activeOption === value,
+          click() {
+            activeOption = value;
+          },
+        }),
+      ),
+    ),
+    separator(),
+    role("cut"),
+    role("copy"),
+    role("paste"),
+  ]);
+
+  menuFunctional.show(event.clientX, event.clientY);
+
+  return;
+
+  const menuWithBuilder = contextMenu((builder) => {
     builder
       .normal({
         id: "delete",
@@ -53,18 +107,16 @@ function createContextMenu(event: MouseEvent) {
             console.log("Radio options clicked");
           },
         },
-        (builder) => {
-          for (const value of ["1", "2", "3"]) {
+        (builder) =>
+          builder.map(["1", "2", "3"], (value) =>
             builder.radio({
               label: `Option ${value}`,
               checked: activeOption === value,
               click() {
                 activeOption = value;
               },
-            });
-          }
-          return builder;
-        },
+            }),
+          ),
       )
       .separator()
       .role({ role: "cut" })
@@ -86,15 +138,13 @@ function createContextMenu(event: MouseEvent) {
     return builder;
   });
 
-  menu.addEventListener("open", () => {
-    console.log("Opened");
-  });
+  // menu.addEventListener("open", () => {
+  //   console.log("Opened");
+  // });
+  //
+  // menu.addEventListener("close", () => {
+  //   console.log("Closed");
+  // });
 
-  menu.addEventListener("close", () => {
-    console.log("Closed");
-  });
-
-  const element = asElement(event.currentTarget);
-
-  menu.build().attach(element).show(event.clientX, event.clientY);
+  menuWithBuilder.show(event.clientX, event.clientY);
 }

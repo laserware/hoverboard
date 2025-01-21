@@ -24,6 +24,7 @@
       "recommended": true,
       "style": {
         "noUselessElse": "off",
+        "noInferrableTypes": "off",
         "noParameterAssign": "off"
       },
       "suspicious": {

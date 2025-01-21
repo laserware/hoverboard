@@ -3,61 +3,64 @@
 exports[`the ContextMenu class builds a context menu with a template that matches its snapshot 1`] = `
 [
   {
-    "id": "random-id-2",
+    "id": "menu-item-1",
     "label": "Normal 1",
     "type": "normal",
   },
   {
-    "id": "random-id-3",
+    "id": "menu-item-2",
     "label": "Normal 2",
     "type": "normal",
   },
   {
-    "id": "random-id-4",
+    "id": "menu-item-3",
     "label": "Normal 3",
     "type": "normal",
     "visible": false,
   },
   {
+    "id": "menu-item-4",
     "role": "copy",
   },
   {
+    "id": "menu-item-5",
     "role": "paste",
   },
   {
+    "id": "menu-item-6",
     "type": "separator",
   },
   {
     "checked": true,
-    "id": "random-id-5",
+    "id": "menu-item-7",
     "label": "Check 1",
     "type": "checkbox",
   },
   {
     "checked": false,
-    "id": "random-id-6",
+    "id": "menu-item-8",
     "label": "Check 2",
     "type": "checkbox",
   },
   {
-    "id": "random-id-10",
+    "id": "menu-item-9",
     "label": "Submenu",
     "submenu": [
       {
         "checked": true,
-        "id": "random-id-7",
+        "id": "menu-item-10",
         "label": "Radio 1",
         "type": "radio",
       },
       {
         "checked": false,
-        "id": "random-id-8",
+        "id": "menu-item-11",
         "label": "Radio 2",
         "type": "radio",
       },
       {
         "checked": false,
-        "id": "random-id-9",
+        "id": "menu-item-12",
         "label": "Radio 3",
         "type": "radio",
       },

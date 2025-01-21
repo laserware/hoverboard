@@ -4,23 +4,23 @@
   "version": "1.0.0",
   "main": "dist/main/main.js",
   "scripts": {
+    "build:preload": "vite build --mode @preload/production",
     "build:renderer": "vite build --mode @renderer/production",
     "start:renderer": "vite serve --mode @renderer/development",
-    "build:main:development": "vite build --mode @main/development",
-    "build:main:production": "vite build --mode @main/production",
+    "build:main": "bun run build:preload && vite build --mode @main/development",
     "start:main": "electron .",
-    "build": "bun run build:main:production && bun run build:renderer",
-    "start:watch": "bun run build:main:development && concurrently --kill-others \"bun run start:main\" \"bun run start:renderer\"",
-    "start": "bun run build && bun run start:main"
+    "build": "bun run build:preload && bun run build:main && bun run build:renderer",
+    "start": "bun run build:main && concurrently --kill-others \"bun run start:main\" \"bun run start:renderer\""
   },
   "author": "Mike Rourke <mike.w.rourke@gmail.com>",
   "license": "MIT",
+  "sideEffects": true,
   "dependencies": {
     "@laserware/dominator": "^4.0.2"
   },
   "devDependencies": {
     "concurrently": "^9.1.1",
-    "electron": "^33.2.1",
+    "electron": "^34.0.0-beta.16",
     "vite": "^6.0.6"
   },
   "trustedDependencies": [
