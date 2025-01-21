@@ -1,6 +1,6 @@
 {
-  "name": "redial-example",
-  "description": "Example application using Redial.",
+  "name": "hoverboard-example",
+  "description": "Example application using Hoverboard.",
   "version": "1.0.0",
   "main": "dist/main/main.js",
   "scripts": {
