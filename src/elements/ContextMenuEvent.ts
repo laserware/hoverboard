@@ -1,7 +1,7 @@
 import type { ContextMenuElement } from "./ContextMenuElement.js";
 import type { ContextMenuItemElement } from "./ContextMenuItemElement.js";
 
-export type ContextMenuEventType = "click" | "hide" | "show";
+export type ContextMenuEventType = "attach" | "click" | "hide" | "show";
 
 export interface ContextMenuEventInit extends EventModifierInit {
   clientX?: number;

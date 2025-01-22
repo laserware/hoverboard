@@ -17,6 +17,7 @@ export interface ContextMenuAttributes {
 
 export class ContextMenuElement extends HTMLElement {
   #controllers: Map<HTMLElement | string, AbortController> = new Map();
+  #trigger: HTMLElement | null = null;
 
   constructor() {
     super();
@@ -93,6 +94,11 @@ export class ContextMenuElement extends HTMLElement {
   }
 
   public addEventListener(
+    type: "attach",
+    listener: ContextMenuEventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  public addEventListener(
     type: "click",
     listener: ContextMenuEventListenerOrEventListenerObject | null,
     options?: boolean | AddEventListenerOptions,
@@ -119,6 +125,11 @@ export class ContextMenuElement extends HTMLElement {
     );
   }
 
+  public removeEventListener(
+    type: "attach",
+    listener: ContextMenuEventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
   public removeEventListener(
     type: "click",
     listener: ContextMenuEventListenerOrEventListenerObject | null,
@@ -163,8 +174,6 @@ export class ContextMenuElement extends HTMLElement {
 
     const globals = getHoverboardGlobals();
 
-    let trigger: HTMLElement | null = null;
-
     const dispatchHideEvent = (
       menuItem: ContextMenuItemElement | null,
       triggeredByAccelerator?: boolean,
@@ -175,7 +184,7 @@ export class ContextMenuElement extends HTMLElement {
           clientY: y,
           menu: this,
           menuItem,
-          trigger,
+          trigger: this.#trigger,
           triggeredByAccelerator,
         }),
       );
@@ -187,20 +196,12 @@ export class ContextMenuElement extends HTMLElement {
     // `href` property, send that to the context menu builder in the main
     // process so we can add the appropriate link actions to the menu:
     for (const element of document.elementsFromPoint(x, y)) {
-      if (
-        this.target !== undefined &&
-        element.matches(this.target) &&
-        trigger === null
-      ) {
-        trigger = element as HTMLElement;
-      }
-
       if (element instanceof HTMLAnchorElement && linkURL === undefined) {
         linkURL = element.href || undefined;
       }
     }
 
-    const promise = globals.showContextMenu({
+    const response = await globals.showContextMenu({
       menuId: this.id,
       position: { x, y },
       template,
@@ -213,11 +214,9 @@ export class ContextMenuElement extends HTMLElement {
         clientY: y,
         menu: this,
         menuItem: null,
-        trigger,
+        trigger: this.#trigger,
       }),
     );
-
-    const response = await promise;
 
     if (response.menuId !== this.id) {
       return null;
@@ -240,7 +239,7 @@ export class ContextMenuElement extends HTMLElement {
       clientY: y,
       menu: this,
       menuItem,
-      trigger,
+      trigger: this.#trigger,
     } satisfies ContextMenuEventInit);
 
     menuItem.dispatchEvent(event);
@@ -257,37 +256,57 @@ export class ContextMenuElement extends HTMLElement {
 
     const { signal } = controller;
 
-    if (target instanceof HTMLElement) {
-      target.addEventListener(
-        "contextmenu",
-        async (event: MouseEvent): Promise<void> => {
-          event.preventDefault();
+    const handleContextMenu = async (event: MouseEvent): Promise<void> => {
+      let trigger: HTMLElement | null = null;
 
-          await this.show(event.clientX, event.clientY);
-        },
-        { signal, capture: true },
-      );
+      if (target instanceof HTMLElement) {
+        trigger = target;
+      } else {
+        const element = event.target as HTMLElement;
 
-      this.#controllers.set(target, controller);
-    } else {
-      window.addEventListener(
-        "contextmenu",
-        async (event: MouseEvent) => {
-          const element = event.target as HTMLElement;
-
-          if (element.matches(target) || element.closest(target) !== null) {
-            event.preventDefault();
-
-            event.stopPropagation();
-
-            await this.show(event.clientX, event.clientY);
+        if (element.matches(target)) {
+          trigger = element;
+        } else {
+          const { clientX: x, clientY: y } = event;
+          for (const element of document.elementsFromPoint(x, y)) {
+            if (element.matches(target)) {
+              trigger = element as HTMLElement;
+              break;
+            }
           }
-        },
-        { signal, capture: true },
+        }
+      }
+
+      this.#trigger = trigger;
+
+      if (trigger === null) {
+        return;
+      }
+
+      event.preventDefault();
+
+      this.dispatchEvent(
+        new ContextMenuEvent("attach", {
+          ...event,
+          menu: this,
+          menuItem: null,
+          trigger,
+          triggeredByAccelerator: false,
+        }),
       );
 
-      this.#controllers.set(target, controller);
+      await this.show(event.clientX, event.clientY);
+    };
+
+    const options = { signal, capture: true };
+
+    if (target instanceof HTMLElement) {
+      target.addEventListener("contextmenu", handleContextMenu, options);
+    } else {
+      window.addEventListener("contextmenu", handleContextMenu, options);
     }
+
+    this.#controllers.set(target, controller);
   }
 
   public detach(): void {

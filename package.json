@@ -30,6 +30,7 @@
   },
   "files": [
     "dist",
+    "elements.d.ts",
     "main.d.ts",
     "renderer.d.ts"
   ],

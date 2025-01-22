@@ -247,7 +247,7 @@ function createElementsContextMenu(): void {
   //   console.log("CLICK", event.menuItem);
   // });
 
-  menu.addEventListener("show", (event: ElementsContextMenuEvent) => {
+  menu.addEventListener("attach", (event: ElementsContextMenuEvent) => {
     console.log(event.trigger);
     // console.log("SHOW", event.menu.toTemplate());
   });
