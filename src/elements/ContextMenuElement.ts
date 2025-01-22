@@ -11,8 +11,8 @@ import { SharingItemEntryElement } from "./SharingItemEntryElement.js";
 import { SubmenuMenuItemElement } from "./SubmenuMenuItemElement.js";
 
 export interface ContextMenuAttributes {
-  target: string | null;
   id: string | null;
+  target?: string | null;
 }
 
 export class ContextMenuElement extends HTMLElement {
@@ -34,10 +34,10 @@ export class ContextMenuElement extends HTMLElement {
   }
 
   @property({ type: String })
-  public target: string | undefined;
+  public id!: string;
 
   @property({ type: String })
-  public id!: string;
+  public target: string | undefined;
 
   public connectedCallback(): void {
     this.setAttribute("inert", "");
@@ -46,10 +46,8 @@ export class ContextMenuElement extends HTMLElement {
       this.id = window.crypto.randomUUID().substring(0, 6);
     }
 
-    if (this.target === undefined) {
-      throw new Error("The target attribute is required for a context menu");
-    } else {
-      this.attach(this.target);
+    if (this.target !== undefined) {
+      this.attachTo(this.target);
     }
   }
 
@@ -162,8 +160,13 @@ export class ContextMenuElement extends HTMLElement {
 
     await globals.hideContextMenu(this.id);
 
-    // biome-ignore format:
-    this.dispatchEvent(new ContextMenuEvent("hide", { menu: this, menuItem: null }));
+    this.dispatchEvent(
+      new ContextMenuEvent("hide", {
+        menu: this,
+        menuItem: null,
+        trigger: this.#trigger,
+      }),
+    );
   }
 
   public async show(
@@ -251,10 +254,14 @@ export class ContextMenuElement extends HTMLElement {
     return menuItem;
   }
 
-  public attach(target: HTMLElement | string): void {
+  public attachTo(target: HTMLElement | string): void {
     const controller = new AbortController();
 
     const { signal } = controller;
+
+    if (target instanceof HTMLElement) {
+      this.#trigger = target;
+    }
 
     const handleContextMenu = async (event: MouseEvent): Promise<void> => {
       let trigger: HTMLElement | null = null;
@@ -315,6 +322,8 @@ export class ContextMenuElement extends HTMLElement {
     }
 
     this.#controllers.clear();
+
+    this.#trigger = null;
   }
 
   public dispose(): void {

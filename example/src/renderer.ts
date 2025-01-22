@@ -174,6 +174,13 @@ function createImperativeContextMenu(): void {
 
 function createElementsContextMenu(): void {
   const menuButton = html("button", "Menu");
+  const otherButton = html("button", "Other");
+
+  let enabled = false;
+
+  otherButton.addEventListener("click", () => {
+    enabled = !enabled;
+  });
 
   registerElements();
 
@@ -181,11 +188,11 @@ function createElementsContextMenu(): void {
 
   const wrapper = html("div");
   wrapper.innerHTML = `
-  <context-menu id="menu" target="[data-editor-tab]">
+  <context-menu id="menu">
     <normal-menu-item id="delete" label="Delete" tooltip="Delete some stuff."></normal-menu-item>
     <normal-menu-item id="add" label="Add"></normal-menu-item>
     <separator-menu-item></separator-menu-item>
-    <normal-menu-item label="Remove"></normal-menu-item>
+    <normal-menu-item label="Remove" enabled="${enabled}"></normal-menu-item>
     <submenu-menu-item label="Checkboxes" id="checkboxes">
       <checkbox-menu-item checked="true" label="Item A"></checkbox-menu-item>
       <checkbox-menu-item label="Item B"></checkbox-menu-item>
@@ -208,6 +215,11 @@ function createElementsContextMenu(): void {
   `;
 
   document.body.appendChild(wrapper);
+  // document.body.appendChild(otherButton);
+
+  const menu = document.querySelector<ContextMenuElement>("#menu");
+
+  // menu.attachTo(menuButton);
 
   const checkboxes = document.querySelector(
     "#checkboxes",
@@ -240,8 +252,6 @@ function createElementsContextMenu(): void {
       }
     }
   });
-
-  const menu = document.querySelector<ContextMenuElement>("#menu");
 
   // item.addEventListener("click", (event: ElementsContextMenuEvent) => {
   //   console.log("CLICK", event.menuItem);
