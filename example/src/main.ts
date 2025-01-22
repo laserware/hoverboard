@@ -31,7 +31,6 @@ app.whenReady().then(() => {
   configureContextMenus({
     inspectElement: true,
     linkHandlers: true,
-    fallback: true,
   });
 
   createWindow();

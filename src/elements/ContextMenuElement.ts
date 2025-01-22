@@ -40,9 +40,6 @@ export class ContextMenuElement extends HTMLElement {
   @property({ type: String })
   public anchor: string | undefined;
 
-  @property({ type: Boolean })
-  public detached: boolean | undefined;
-
   @property({ type: String })
   public id!: string;
 
@@ -53,17 +50,17 @@ export class ContextMenuElement extends HTMLElement {
       this.id = window.crypto.randomUUID().substring(0, 6);
     }
 
-    if (!this.detached) {
+    if (this.anchor === undefined) {
+      throw new Error("The anchor attribute is required for a context menu");
+    } else {
       this.attach(this.anchor);
     }
   }
 
   public disconnectedCallback(): void {
-    void this.hide();
-
-    if (!this.detached) {
-      this.detach();
-    }
+    this.hide().finally(() => {
+      this.dispose();
+    });
   }
 
   public getAttribute(name: keyof ContextMenuAttributes) {
@@ -254,7 +251,7 @@ export class ContextMenuElement extends HTMLElement {
     return menuItem;
   }
 
-  public attach(anchor: HTMLElement | string | undefined): void {
+  public attach(anchor: HTMLElement | string): void {
     const controller = new AbortController();
 
     const { signal } = controller;
@@ -266,26 +263,19 @@ export class ContextMenuElement extends HTMLElement {
     };
 
     if (anchor instanceof HTMLElement) {
-      anchor.addEventListener("contextmenu", handleContextMenu, { signal });
+      anchor.addEventListener("contextmenu", handleContextMenu, {
+        signal,
+        capture: true,
+      });
 
       this.#controllers.set(anchor, controller);
-    } else if (anchor === undefined) {
-      const parent = this.parentElement;
-
-      if (parent instanceof HTMLElement) {
-        parent.addEventListener("contextmenu", handleContextMenu, { signal });
-
-        this.#controllers.set(parent, controller);
-      } else {
-        throw new Error("No parent found for context menu");
-      }
     } else {
       window.addEventListener(
         "contextmenu",
         async (event: MouseEvent) => {
           const target = event.target as HTMLElement;
 
-          if ("matches" in target && target.matches(anchor)) {
+          if (target.matches(anchor) || target.closest(anchor) !== null) {
             event.preventDefault();
 
             event.stopPropagation();
@@ -300,7 +290,7 @@ export class ContextMenuElement extends HTMLElement {
     }
   }
 
-  public detach(): void {
+  public dispose(): void {
     for (const controller of this.#controllers.values()) {
       controller.abort();
     }

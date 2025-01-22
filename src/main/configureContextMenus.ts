@@ -1,13 +1,9 @@
 import {
   BrowserWindow,
-  type ContextMenuParams,
-  type Event,
   type IpcMainInvokeEvent,
   Menu,
   type MenuItemConstructorOptions,
   type NativeImage,
-  type PopupOptions,
-  app,
   clipboard,
   ipcMain,
   nativeImage,
@@ -35,15 +31,26 @@ export type ContextMenuOptions = {
    * was an anchor tag.
    */
   linkHandlers?: boolean;
-
-  /**
-   * Context menu to display for any elements that don't have a context menu
-   * already defined. If `true`, adds a default context menu with common clipboard
-   * operations  and the ability to inspect elements. Alternatively, specify a
-   * template to show.
-   */
-  fallback?: boolean | MenuItemConstructorOptions[];
 };
+
+/**
+ * Electron Menu instance with an ID that enables us to find the menu and
+ * dispose of it.
+ *
+ * @internal
+ */
+interface CustomContextMenu extends Menu {
+  id: string;
+}
+
+function createCustomContextMenu(
+  id: string,
+  template: MenuItemConstructorOptions[],
+): CustomContextMenu {
+  const contextMenu = Menu.buildFromTemplate(template);
+
+  return Object.assign(contextMenu, { id });
+}
 
 /**
  * Configures context menus that can be created from the renderer process.
@@ -53,13 +60,7 @@ export type ContextMenuOptions = {
 export function configureContextMenus(options: ContextMenuOptions): {
   dispose(): void;
 } {
-  let fallbackMenuDisposable = { dispose: () => {} };
-
-  if (options.fallback !== undefined) {
-    fallbackMenuDisposable = setFallbackMenu(options);
-  }
-
-  const contextMenus = new Map<string, ContextMenu>();
+  const contextMenus = new Map<string, CustomContextMenu>();
 
   const closeContextMenu = (menuId: string, window: BrowserWindow): void => {
     contextMenus.get(menuId)?.closePopup(window);
@@ -136,7 +137,7 @@ export function configureContextMenus(options: ContextMenuOptions): {
         );
       }
 
-      const contextMenu = new ContextMenu(menuId, template);
+      const contextMenu = createCustomContextMenu(menuId, template);
 
       contextMenus.set(menuId, contextMenu);
 
@@ -171,100 +172,10 @@ export function configureContextMenus(options: ContextMenuOptions): {
 
   return {
     dispose(): void {
-      fallbackMenuDisposable.dispose();
-
       ipcMain.removeHandler(IpcChannel.ForShowContextMenu);
       ipcMain.removeHandler(IpcChannel.ForHideContextMenu);
     },
   };
-}
-
-/**
- * Adds a fallback context menu to every element in the DOM that doesn't have
- * a custom context menu explicitly specified. The menu contains standard
- * clipboard operations and the ability to inspect elements (if specified).
- */
-function setFallbackMenu(options: ContextMenuOptions): { dispose(): void } {
-  const controller = new AbortController();
-
-  const handleBrowserWindowCreated = (
-    event: Event,
-    browserWindow: BrowserWindow,
-  ): void => {
-    const webContents = browserWindow.webContents;
-
-    const handleWebContentsContextMenu = (
-      event: Event,
-      params: ContextMenuParams,
-    ) => {
-      const template: MenuItemConstructorOptions[] = [];
-
-      if (Array.isArray(options.fallback)) {
-        template.push(...options.fallback);
-      } else {
-        // TODO: We probably want to add more items here at some point and
-        //       may need to tweak it based on the target element.
-        template.push({ role: "cut" }, { role: "copy" }, { role: "paste" });
-
-        if (options.inspectElement) {
-          template.push(
-            { type: "separator" },
-            {
-              label: "Inspect Element",
-              click() {
-                webContents.inspectElement(params.x, params.y);
-              },
-            },
-          );
-        }
-      }
-
-      const contextMenu = Menu.buildFromTemplate(template);
-
-      contextMenu.popup({ window: browserWindow });
-    };
-
-    // Important Note! If you don't call `event.preventDefault` in the
-    // `contextmenu` event for the target element in the renderer, the
-    // default menu will be shown instead of the custom context menu, so
-    // make sure you do that!
-    webContents.addListener("context-menu", handleWebContentsContextMenu);
-
-    controller.signal.addEventListener("abort", () => {
-      webContents.removeListener("context-menu", handleWebContentsContextMenu);
-    });
-  };
-
-  app.addListener("browser-window-created", handleBrowserWindowCreated);
-
-  controller.signal.addEventListener("abort", () => {
-    app.removeListener("browser-window-created", handleBrowserWindowCreated);
-  });
-
-  return {
-    dispose(): void {
-      controller.abort();
-    },
-  };
-}
-
-class ContextMenu {
-  #menu: Menu;
-
-  public id = "";
-
-  constructor(id: string, template: MenuItemConstructorOptions[]) {
-    this.id = id;
-    this.#menu = Menu.buildFromTemplate(template);
-  }
-
-  public popup(options?: PopupOptions): void {
-    this.#menu.popup(options);
-  }
-
-  public closePopup(window?: BrowserWindow): void {
-    this.#menu.closePopup(window);
-  }
 }
 
 function getIconForMenuItem(

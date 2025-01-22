@@ -10,7 +10,6 @@ import {
   registerElements,
 } from "../../src/elements";
 import {
-  type ContextMenu,
   RadioMenuItem,
   type ContextMenuEvent as RendererContextMenuEvent,
   contextMenu,
@@ -23,30 +22,21 @@ let activeOption = "1";
 start();
 
 function start(): void {
-  createEditorMenu();
-  // createElementsContextMenu();
+  // createEditorMenu();
+  createElementsContextMenu();
   // createImperativeContextMenu();
-
-  const editorMenu = createEditorMenu();
-
-  editorMenu.addEventListener("click", (event) => {
-    console.log(event.menuItem);
-  });
-
-  window.addEventListener("contextmenu", async (event) => {
-    await editorMenu.show(event.clientX, event.clientY);
-  });
 
   const menuButton = html(
     "button",
-    html("a", { href: "https://google.com" }, "MENU"),
+    { dataset: { editorTab: "" } },
+    html("a", { href: "https://google.com" }, "Tab"),
   );
 
   document.body.appendChild(menuButton);
 }
 
-function createEditorMenu(): ContextMenu {
-  return contextMenu((builder) =>
+function createEditorMenu(): void {
+  const menu = contextMenu((builder) =>
     builder
       .normal({
         id: "close-editor",
@@ -96,6 +86,14 @@ function createEditorMenu(): ContextMenu {
       .normal({ id: "move-into-new-window", label: "Move into New Window" })
       .normal({ id: "copy-into-new-window", label: "Copy into New Window" }),
   );
+
+  menu.addEventListener("click", (event) => {
+    console.log(event.menuItem);
+  });
+
+  window.addEventListener("contextmenu", async (event) => {
+    await menu.show(event.clientX, event.clientY);
+  });
 }
 
 function createImperativeContextMenu(): void {
@@ -183,7 +181,7 @@ function createElementsContextMenu(): void {
 
   const wrapper = html("div");
   wrapper.innerHTML = `
-  <context-menu id="menu" anchor="*" open="true">
+  <context-menu id="menu" anchor="[data-editor-tab]">
     <normal-menu-item id="delete" label="Delete" tooltip="Delete some stuff."></normal-menu-item>
     <normal-menu-item id="add" label="Add"></normal-menu-item>
     <separator-menu-item></separator-menu-item>
@@ -250,11 +248,11 @@ function createElementsContextMenu(): void {
   // });
 
   menu.addEventListener("show", (event: ElementsContextMenuEvent) => {
-    console.log("SHOW", event.menu.toTemplate());
+    // console.log("SHOW", event.menu.toTemplate());
   });
 
   menu.addEventListener("hide", (event: ElementsContextMenuEvent) => {
-    console.log("HIDE", event.menu, event.menuItem);
+    // console.log("HIDE", event.menu, event.menuItem);
   });
 
   // setInterval(() => {
