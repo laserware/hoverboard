@@ -9,6 +9,7 @@ export interface ContextMenuEventInit extends EventModifierInit {
   triggeredByAccelerator?: boolean;
   menu: ContextMenuElement | null;
   menuItem: ContextMenuItemElement | null;
+  trigger?: HTMLElement | null;
 }
 
 type ContextMenuEventListener = (event: ContextMenuEvent) => void;
@@ -22,6 +23,7 @@ export type ContextMenuEventListenerOrEventListenerObject =
   | ContextMenuEventListenerObject;
 
 export class ContextMenuEvent extends Event {
+  public trigger: HTMLElement | null;
   public triggeredByAccelerator: boolean;
   public clientX: number;
   public clientY: number;
@@ -30,6 +32,7 @@ export class ContextMenuEvent extends Event {
 
   constructor(type: ContextMenuEventType, eventInitDict: ContextMenuEventInit) {
     const {
+      trigger,
       clientX,
       clientY,
       menu,
@@ -44,6 +47,7 @@ export class ContextMenuEvent extends Event {
     this.clientY = clientY ?? 0;
     this.menuItem = menuItem;
     this.menu = menu;
+    this.trigger = trigger ?? null;
     this.triggeredByAccelerator = triggeredByAccelerator ?? false;
   }
 }

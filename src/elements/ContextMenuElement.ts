@@ -6,17 +6,12 @@ import {
   type ContextMenuEventInit,
   type ContextMenuEventListenerOrEventListenerObject,
 } from "./ContextMenuEvent.js";
-import {
-  type BooleanAttribute,
-  ContextMenuItemElement,
-  property,
-} from "./ContextMenuItemElement.js";
+import { ContextMenuItemElement, property } from "./ContextMenuItemElement.js";
 import { SharingItemEntryElement } from "./SharingItemEntryElement.js";
 import { SubmenuMenuItemElement } from "./SubmenuMenuItemElement.js";
 
 export interface ContextMenuAttributes {
-  anchor: string | null;
-  detached: BooleanAttribute;
+  target: string | null;
   id: string | null;
 }
 
@@ -38,7 +33,7 @@ export class ContextMenuElement extends HTMLElement {
   }
 
   @property({ type: String })
-  public anchor: string | undefined;
+  public target: string | undefined;
 
   @property({ type: String })
   public id!: string;
@@ -50,17 +45,15 @@ export class ContextMenuElement extends HTMLElement {
       this.id = window.crypto.randomUUID().substring(0, 6);
     }
 
-    if (this.anchor === undefined) {
-      throw new Error("The anchor attribute is required for a context menu");
+    if (this.target === undefined) {
+      throw new Error("The target attribute is required for a context menu");
     } else {
-      this.attach(this.anchor);
+      this.attach(this.target);
     }
   }
 
   public disconnectedCallback(): void {
-    this.hide().finally(() => {
-      this.dispose();
-    });
+    this.dispose();
   }
 
   public getAttribute(name: keyof ContextMenuAttributes) {
@@ -158,9 +151,8 @@ export class ContextMenuElement extends HTMLElement {
 
     await globals.hideContextMenu(this.id);
 
-    this.dispatchEvent(
-      new ContextMenuEvent("hide", { menu: this, menuItem: null }),
-    );
+    // biome-ignore format:
+    this.dispatchEvent(new ContextMenuEvent("hide", { menu: this, menuItem: null }));
   }
 
   public async show(
@@ -170,6 +162,8 @@ export class ContextMenuElement extends HTMLElement {
     const template = this.toTemplate();
 
     const globals = getHoverboardGlobals();
+
+    let trigger: HTMLElement | null = null;
 
     const dispatchHideEvent = (
       menuItem: ContextMenuItemElement | null,
@@ -181,6 +175,7 @@ export class ContextMenuElement extends HTMLElement {
           clientY: y,
           menu: this,
           menuItem,
+          trigger,
           triggeredByAccelerator,
         }),
       );
@@ -192,12 +187,16 @@ export class ContextMenuElement extends HTMLElement {
     // `href` property, send that to the context menu builder in the main
     // process so we can add the appropriate link actions to the menu:
     for (const element of document.elementsFromPoint(x, y)) {
-      if (element instanceof HTMLAnchorElement) {
-        linkURL = element.href || undefined;
+      if (
+        this.target !== undefined &&
+        element.matches(this.target) &&
+        trigger === null
+      ) {
+        trigger = element as HTMLElement;
       }
 
-      if (linkURL !== undefined) {
-        break;
+      if (element instanceof HTMLAnchorElement && linkURL === undefined) {
+        linkURL = element.href || undefined;
       }
     }
 
@@ -214,6 +213,7 @@ export class ContextMenuElement extends HTMLElement {
         clientY: y,
         menu: this,
         menuItem: null,
+        trigger,
       }),
     );
 
@@ -240,6 +240,7 @@ export class ContextMenuElement extends HTMLElement {
       clientY: y,
       menu: this,
       menuItem,
+      trigger,
     } satisfies ContextMenuEventInit);
 
     menuItem.dispatchEvent(event);
@@ -251,31 +252,30 @@ export class ContextMenuElement extends HTMLElement {
     return menuItem;
   }
 
-  public attach(anchor: HTMLElement | string): void {
+  public attach(target: HTMLElement | string): void {
     const controller = new AbortController();
 
     const { signal } = controller;
 
-    const handleContextMenu = async (event: MouseEvent): Promise<void> => {
-      event.preventDefault();
+    if (target instanceof HTMLElement) {
+      target.addEventListener(
+        "contextmenu",
+        async (event: MouseEvent): Promise<void> => {
+          event.preventDefault();
 
-      await this.show(event.clientX, event.clientY);
-    };
+          await this.show(event.clientX, event.clientY);
+        },
+        { signal, capture: true },
+      );
 
-    if (anchor instanceof HTMLElement) {
-      anchor.addEventListener("contextmenu", handleContextMenu, {
-        signal,
-        capture: true,
-      });
-
-      this.#controllers.set(anchor, controller);
+      this.#controllers.set(target, controller);
     } else {
       window.addEventListener(
         "contextmenu",
         async (event: MouseEvent) => {
-          const target = event.target as HTMLElement;
+          const element = event.target as HTMLElement;
 
-          if (target.matches(anchor) || target.closest(anchor) !== null) {
+          if (element.matches(target) || element.closest(target) !== null) {
             event.preventDefault();
 
             event.stopPropagation();
@@ -286,15 +286,19 @@ export class ContextMenuElement extends HTMLElement {
         { signal, capture: true },
       );
 
-      this.#controllers.set(anchor, controller);
+      this.#controllers.set(target, controller);
     }
   }
 
-  public dispose(): void {
+  public detach(): void {
     for (const controller of this.#controllers.values()) {
       controller.abort();
     }
 
     this.#controllers.clear();
+  }
+
+  public dispose(): void {
+    this.detach();
   }
 }

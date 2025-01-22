@@ -181,7 +181,7 @@ function createElementsContextMenu(): void {
 
   const wrapper = html("div");
   wrapper.innerHTML = `
-  <context-menu id="menu" anchor="[data-editor-tab]">
+  <context-menu id="menu" target="[data-editor-tab]">
     <normal-menu-item id="delete" label="Delete" tooltip="Delete some stuff."></normal-menu-item>
     <normal-menu-item id="add" label="Add"></normal-menu-item>
     <separator-menu-item></separator-menu-item>
@@ -248,6 +248,7 @@ function createElementsContextMenu(): void {
   // });
 
   menu.addEventListener("show", (event: ElementsContextMenuEvent) => {
+    console.log(event.trigger);
     // console.log("SHOW", event.menu.toTemplate());
   });
 
