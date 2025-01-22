@@ -1,6 +1,6 @@
 {
   "name": "@laserware/hoverboard",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Better menus for Electron.",
   "author": "Mike Rourke <mike.w.rourke@gmail.com> (https://mikerourke.dev/)",
   "license": "MIT",
