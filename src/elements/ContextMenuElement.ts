@@ -228,7 +228,7 @@ export class ContextMenuElement extends HTMLElement {
     const menuItem =
       response.menuItemId === null
         ? null
-        : this.querySelector(`#${response.menuItemId}`);
+        : this.#findMenuItem(response.menuItemId);
 
     if (!(menuItem instanceof ContextMenuItemElement)) {
       dispatchHideEvent(null);
@@ -236,22 +236,42 @@ export class ContextMenuElement extends HTMLElement {
       return null;
     }
 
-    const event = new ContextMenuEvent("click", {
+    const clickInit = {
       ...response.event,
       clientX: x,
       clientY: y,
       menu: this,
       menuItem,
       trigger: this.#trigger,
-    } satisfies ContextMenuEventInit);
+    } satisfies ContextMenuEventInit;
 
-    menuItem.dispatchEvent(event);
+    menuItem.dispatchEvent(
+      new ContextMenuEvent("click", { ...clickInit, bubbles: false }),
+    );
 
-    this.dispatchEvent(event);
+    this.dispatchEvent(
+      new ContextMenuEvent("click", { ...clickInit, bubbles: true }),
+    );
 
     dispatchHideEvent(menuItem, response.event.triggeredByAccelerator);
 
     return menuItem;
+  }
+
+  #findMenuItem(id: string): HTMLElement | null {
+    const walker = document.createTreeWalker(this, NodeFilter.SHOW_ELEMENT);
+
+    let node = walker.firstChild();
+
+    while (node !== null) {
+      if (node instanceof HTMLElement && "id" in node && node.id === id) {
+        return node;
+      }
+
+      node = walker.nextNode();
+    }
+
+    return null;
   }
 
   public attachTo(target: HTMLElement | string): void {

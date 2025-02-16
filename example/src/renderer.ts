@@ -217,7 +217,15 @@ function createElementsContextMenu(): void {
   document.body.appendChild(wrapper);
   // document.body.appendChild(otherButton);
 
+  document.querySelector("#add")!.addEventListener("click", (event) => {
+    console.log("BUTTON", event);
+  });
+
   const menu = document.querySelector<ContextMenuElement>("#menu");
+
+  menu.addEventListener("click", (event: ElementsContextMenuEvent) => {
+    console.log("MENU", event);
+  });
 
   // menu.attachTo(menuButton);
 
@@ -262,9 +270,9 @@ function createElementsContextMenu(): void {
     // console.log("SHOW", event.menu.toTemplate());
   });
 
-  menu.addEventListener("hide", (event: ElementsContextMenuEvent) => {
-    // console.log("HIDE", event.menu, event.menuItem);
-  });
+  // menu.addEventListener("hide", (event: ElementsContextMenuEvent) => {
+  //   console.log("HIDE", event.menu, event.menuItem);
+  // });
 
   // setInterval(() => {
   //   console.log("TOGGLE");
