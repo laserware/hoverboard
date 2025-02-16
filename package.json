@@ -31,14 +31,12 @@
       }
     },
     "./renderer": {
-      "import": {
-        "types": "./dist/renderer.d.ts",
-        "default": "./dist/renderer.mjs"
-      },
-      "require": {
-        "types": "./dist/renderer.d.cts",
-        "default": "./dist/renderer.cjs"
-      }
+      "types": "./dist/renderer.d.ts",
+      "default": "./dist/renderer.mjs"
+    },
+    "./elements": {
+      "types": "./dist/elements.d.ts",
+      "default": "./dist/elements.mjs"
     }
   },
   "files": [
