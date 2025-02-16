@@ -1,1 +1,3 @@
-import "../../src/sandbox/preload";
+import { preloadHoverboard } from "../../src/sandbox";
+
+preloadHoverboard();

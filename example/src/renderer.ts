@@ -173,7 +173,7 @@ function createImperativeContextMenu(): void {
 }
 
 function createElementsContextMenu(): void {
-  const menuButton = html("button", "Menu");
+  const menuButton = html("button", { id: "show-menu" }, "Menu");
   const otherButton = html("button", "Other");
 
   let enabled = false;
@@ -188,7 +188,7 @@ function createElementsContextMenu(): void {
 
   const wrapper = html("div");
   wrapper.innerHTML = `
-  <context-menu id="menu">
+  <context-menu id="menu" target="#show-menu">
     <normal-menu-item id="delete" label="Delete" tooltip="Delete some stuff."></normal-menu-item>
     <normal-menu-item id="add" label="Add"></normal-menu-item>
     <separator-menu-item></separator-menu-item>
