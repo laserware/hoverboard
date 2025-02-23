@@ -47,6 +47,8 @@ export class SubmenuMenuItemElement extends NormalMenuItemElement<SubmenuMenuIte
       }
 
       if (node instanceof ContextMenuItemElement) {
+        node.submenu = this;
+
         submenu.push(node.toTemplate());
       }
 

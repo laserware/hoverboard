@@ -51,10 +51,12 @@ export default defineConfig(() => {
     esm("main", { entry: { main: "src/main/index.ts" }, platform: "node" }),
     cjs("main", { entry: { main: "src/main/index.ts" } }),
     esm("preload", {
+      dts: false,
       entry: { preload: "src/sandbox/preload.ts" },
       platform: "node",
     }),
     cjs("preload", {
+      dts: false,
       entry: { preload: "src/sandbox/preload.ts" },
     }),
     esm("renderer", {

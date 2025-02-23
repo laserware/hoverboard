@@ -1,6 +1,7 @@
 import type { MenuItemConstructorOptions } from "electron";
 
 import type { ContextMenuItemType } from "../renderer/types.js";
+import type { SubmenuMenuItemElement } from "./SubmenuMenuItemElement.js";
 
 export type BooleanAttribute = "true" | "false" | null;
 
@@ -85,6 +86,8 @@ export class ContextMenuItemElement<
 
   @property({ type: Boolean })
   public visible: boolean | undefined;
+
+  public submenu: SubmenuMenuItemElement | null = null;
 
   public toTemplate(): MenuItemConstructorOptions {
     const template: MenuItemConstructorOptions = {};

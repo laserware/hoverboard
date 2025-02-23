@@ -1,3 +1,1 @@
-import { preloadHoverboard } from "../../src/sandbox";
-
-preloadHoverboard();
+import "../../dist/preload.cjs";

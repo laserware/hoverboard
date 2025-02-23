@@ -8,7 +8,7 @@ import {
   hoverboardApiKey,
 } from "./globals.js";
 
-export function preloadHoverboard(): void {
+function preloadHoverboard(): void {
   const globals: HoverboardGlobals = {
     showContextMenu(
       request: ShowContextMenuRequest,
@@ -26,3 +26,5 @@ export function preloadHoverboard(): void {
     window[hoverboardApiKey] = globals;
   }
 }
+
+preloadHoverboard();

@@ -2,6 +2,7 @@ import { builtinModules } from "node:module";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig, mergeConfig } from "vite";
 
 const rootDirPath = fileURLToPath(new URL(".", import.meta.url));
@@ -57,11 +58,12 @@ export default defineConfig(({ mode }) => {
         build: {
           outDir: join("dist", "renderer"),
           rollupOptions: {
-            input: {
-              renderer: resolve(rootDirPath, "index.html"),
-            },
+            input: resolve(rootDirPath, "index.html"),
           },
         },
+        plugins: [
+          svelte({ configFile: resolve(rootDirPath, "svelte.config.mjs") }),
+        ],
         server: {
           port: SERVER_PORT,
         },
@@ -79,6 +81,9 @@ export default defineConfig(({ mode }) => {
           lib: {
             entry: join("src", "preload.ts"),
             formats: ["cjs"],
+          },
+          rollupOptions: {
+            treeshake: false,
           },
         },
       },

@@ -8,13 +8,13 @@ import {
   RadioMenuItemElement,
   type SubmenuMenuItemElement,
   registerElements,
-} from "../../src/elements";
+} from "../../../src/elements";
 import {
   RadioMenuItem,
   type ContextMenuEvent as RendererContextMenuEvent,
   contextMenu,
   items,
-} from "../../src/renderer";
+} from "../../../src/renderer";
 
 let isChecked = false;
 let activeOption = "1";
@@ -22,7 +22,6 @@ let activeOption = "1";
 start();
 
 function start(): void {
-  // createEditorMenu();
   createElementsContextMenu();
   // createImperativeContextMenu();
 
@@ -33,67 +32,6 @@ function start(): void {
   );
 
   document.body.appendChild(menuButton);
-}
-
-function createEditorMenu(): void {
-  const menu = contextMenu((builder) =>
-    builder
-      .normal({
-        id: "close-editor",
-        label: "Close",
-        accelerator: "CommandOrControl+W",
-      })
-      .normal({
-        id: "close-others",
-        label: "Close Others",
-        accelerator: "CommandOrControl+Alt+T",
-      })
-      .normal({
-        id: "close-to-right",
-        label: "Close to the Right",
-      })
-      .normal({
-        id: "close-saved",
-        label: "Close Saved",
-      })
-      .normal({
-        id: "close-all",
-        label: "Close All",
-      })
-      .separator()
-      .normal({
-        id: "copy-path",
-        label: "Copy Path",
-        accelerator: "CommandOrControl+Shift+C",
-      })
-      .normal({
-        id: "copy-relative-path",
-        label: "Copy Relative Path",
-        accelerator: "CommandOrControl+Alt+Shift+C",
-      })
-      .separator()
-      .normal({ id: "reopen-editor-with", label: "Reopen Editor With..." })
-      .separator()
-      .normal({ id: "pin-tab", label: "Pin" })
-      .separator()
-      .normal({ id: "split-up", label: "Split Up" })
-      .normal({ id: "split-down", label: "Split Down" })
-      .normal({ id: "split-left", label: "Split Left" })
-      .normal({ id: "split-right", label: "Split Right" })
-      .separator()
-      .normal({ id: "split-in-group", label: "Split in Group" })
-      .separator()
-      .normal({ id: "move-into-new-window", label: "Move into New Window" })
-      .normal({ id: "copy-into-new-window", label: "Copy into New Window" }),
-  );
-
-  menu.addEventListener("click", (event) => {
-    console.log(event.menuItem);
-  });
-
-  window.addEventListener("contextmenu", async (event) => {
-    await menu.show(event.clientX, event.clientY);
-  });
 }
 
 function createImperativeContextMenu(): void {
@@ -200,7 +138,7 @@ function createElementsContextMenu(): void {
     </submenu-menu-item>
     <separator-menu-item></separator-menu-item>
     <submenu-menu-item label="Radio" id="radios">
-      <radio-menu-item label="Item A"></radio-menu-item>
+      <radio-menu-item id="item-a" label="Item A"></radio-menu-item>
       <radio-menu-item label="Item B"></radio-menu-item>
       <radio-menu-item label="Item C"></radio-menu-item>
     </submenu-menu-item>
@@ -217,7 +155,7 @@ function createElementsContextMenu(): void {
   document.body.appendChild(wrapper);
   // document.body.appendChild(otherButton);
 
-  document.querySelector("#add")!.addEventListener("click", (event) => {
+  document.querySelector("#item-a")!.addEventListener("click", (event) => {
     console.log("BUTTON", event);
   });
 
@@ -238,7 +176,7 @@ function createElementsContextMenu(): void {
   checkboxes.addEventListener("click", (event: ElementsContextMenuEvent) => {
     const element = event.target as ContextMenuItemElement;
 
-    for (const child of element.parentElement as SubmenuMenuItemElement) {
+    for (const child of element.submenu!) {
       if (element !== child) {
         continue;
       }

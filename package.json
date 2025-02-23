@@ -21,14 +21,8 @@
       }
     },
     "./preload": {
-      "import": {
-        "types": "./dist/preload.d.ts",
-        "default": "./dist/preload.mjs"
-      },
-      "require": {
-        "types": "./dist/preload.d.cts",
-        "default": "./dist/preload.cjs"
-      }
+      "import": "./dist/preload.mjs",
+      "require": "./dist/preload.cjs"
     },
     "./renderer": {
       "types": "./dist/renderer.d.ts",
@@ -41,6 +35,7 @@
   },
   "files": [
     "dist",
+    "src",
     "elements.d.ts",
     "main.d.ts",
     "preload.d.ts",
@@ -53,7 +48,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/preload.cjs",
+    "./dist/preload.mjs"
+  ],
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "bun run build",
