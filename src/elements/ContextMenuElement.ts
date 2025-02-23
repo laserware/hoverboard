@@ -245,13 +245,9 @@ export class ContextMenuElement extends HTMLElement {
       trigger: this.#trigger,
     } satisfies ContextMenuEventInit;
 
-    menuItem.dispatchEvent(
-      new ContextMenuEvent("click", { ...clickInit, bubbles: false }),
-    );
+    menuItem.dispatchEvent(new ContextMenuEvent("click", clickInit));
 
-    this.dispatchEvent(
-      new ContextMenuEvent("click", { ...clickInit, bubbles: true }),
-    );
+    this.dispatchEvent(new ContextMenuEvent("click", clickInit));
 
     dispatchHideEvent(menuItem, response.event.triggeredByAccelerator);
 

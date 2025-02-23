@@ -1,5 +1,9 @@
 <script lang="ts">
   let enabled = $state(false);
+
+  function handleClick(): void {
+    console.log("YO");
+  }
 </script>
 
 <style>
@@ -10,7 +14,7 @@
 </button>
 
 <context-menu id="menu" target="#show-menu">
-  <normal-menu-item id="delete" label="Delete" tooltip="Delete some stuff."></normal-menu-item>
+  <normal-menu-item id="delete" label="Delete" tooltip="Delete some stuff." onclick={handleClick}></normal-menu-item>
   <normal-menu-item id="add" label="Add"></normal-menu-item>
   <separator-menu-item></separator-menu-item>
   <normal-menu-item label="Remove" enabled={enabled}></normal-menu-item>
