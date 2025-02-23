@@ -41,7 +41,7 @@ export class ContextMenuEvent extends Event {
       ...rest
     } = eventInitDict;
 
-    super(type, { bubbles: false, cancelable: true, composed: true, ...rest });
+    super(type, { bubbles: true, cancelable: true, composed: true, ...rest });
 
     this.clientX = clientX ?? 0;
     this.clientY = clientY ?? 0;
